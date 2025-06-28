@@ -28,6 +28,7 @@ function Row({ item }: { item: Item }) {
       style={{
         WebkitUserSelect: "none",
         WebkitTouchCallout: "none",
+        touchAction: "none",
         transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
         transition,
         padding: "8px",
