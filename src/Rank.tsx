@@ -1,11 +1,9 @@
 // src/Rank.tsx
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useState } from "react";
 import {
   DndContext,
   closestCenter,
-  MouseSensor,
-  TouchSensor,
+  PointerSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -16,10 +14,8 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 
-/* ---- тип карточки ---- */
-type Item = { id: string; text: string };
+type Item = { id: string; text: string };   // ⬅️ добавили тип
 
-/* ---- компонент строки ---- */
 function Row({ item }: { item: Item }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: item.id });
@@ -30,17 +26,8 @@ function Row({ item }: { item: Item }) {
       {...attributes}
       {...listeners}
       style={{
-        /* отключаем выделение текста, лупу и скролл-жест */
-        WebkitUserSelect: "none",
-        userSelect: "none",
-        WebkitTouchCallout: "none",
-        touchAction: "none",
-
-        /* dnd-kit трансформация */
         transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
         transition,
-
-        /* оформление карточки */
         padding: "8px",
         border: "1px solid #ccc",
         marginBottom: "6px",
@@ -48,38 +35,30 @@ function Row({ item }: { item: Item }) {
         cursor: "grab",
       }}
     >
-      {item.text}
+      {item.text}        {/* ⬅️ показываем текст, а не id */}
     </div>
   );
 }
 
-/* ---- пропсы основного компонента ---- */
-interface Props {
-  list: string[];                 // id выбранных фраз (5 шт.)
-  idToText: (id: string) => string;
+export default function Rank({
+  list,                   // раньше: string[]  (id)
+  onDone,
+  idToText,               // ⬅️ передадим функцию поиска текста
+}: {
+  list: string[];
   onDone: (order: string[]) => void;
-}
+  idToText: (id: string) => string;
+}) {
+  /* превращаем id[] → Item[] с текстом */
+  const [items, setItems] = useState<Item[]>(list.map(id => ({ id, text: idToText(id) })));
 
-/* ---- sensors: мышь + тач с порогом 3 px ---- */
-const sensors = useSensors(
-  useSensor(MouseSensor),
-  useSensor(TouchSensor, {
-    activationConstraint: { distance: 3 },
-  })
-);
-
-/* ---- основной компонент ---- */
-export default function Rank({ list, idToText, onDone }: Props) {
-  /* превращаем id[] => Item[] */
-  const [items, setItems] = useState<Item[]>(
-    list.map((id) => ({ id, text: idToText(id) }))
-  );
+  const sensors = useSensors(useSensor(PointerSensor));
 
   const handleDragEnd = (e: any) => {
     const { active, over } = e;
     if (active.id !== over.id) {
-      const oldIndex = items.findIndex((i) => i.id === active.id);
-      const newIndex = items.findIndex((i) => i.id === over.id);
+      const oldIndex = items.findIndex(i => i.id === active.id);
+      const newIndex = items.findIndex(i => i.id === over.id);
       setItems(arrayMove(items, oldIndex, newIndex));
     }
   };
@@ -90,27 +69,19 @@ export default function Rank({ list, idToText, onDone }: Props) {
         Ранжируй 5 фраз (сверху — самая «ваша»)
       </h1>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={items.map((i) => i.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {items.map((item) => (
-            <Row key={item.id} item={item} />
-          ))}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
+          {items.map(item => <Row key={item.id} item={item} />)}
         </SortableContext>
       </DndContext>
 
       <button
         style={{ marginTop: 12, padding: "8px 16px" }}
-        onClick={() => onDone(items.map((i) => i.id))}
+        onClick={() => onDone(items.map(i => i.id))}
       >
         Готово
       </button>
     </div>
   );
 }
+
