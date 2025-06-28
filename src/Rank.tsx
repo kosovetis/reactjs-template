@@ -1,11 +1,12 @@
+// src/Rank.tsx
 import { useState } from "react";
 import {
   DndContext,
   closestCenter,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
-  type PointerSensorOptions,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -14,8 +15,10 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 
+/* ---- тип карточки ---- */
 type Item = { id: string; text: string };
 
+/* ---- компонент строки ---- */
 function Row({ item }: { item: Item }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: item.id });
@@ -26,11 +29,17 @@ function Row({ item }: { item: Item }) {
       {...attributes}
       {...listeners}
       style={{
+        /* отключаем выделение текста, лупу и скролл-жест */
         WebkitUserSelect: "none",
         userSelect: "none",
         WebkitTouchCallout: "none",
+        touchAction: "none",
+
+        /* dnd-kit трансформация */
         transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
         transition,
+
+        /* оформление карточки */
         padding: "8px",
         border: "1px solid #ccc",
         marginBottom: "6px",
@@ -43,22 +52,27 @@ function Row({ item }: { item: Item }) {
   );
 }
 
+/* ---- пропсы основного компонента ---- */
 interface Props {
-  list: string[];
+  list: string[];                 // id выбранных фраз (5 шт.)
   idToText: (id: string) => string;
   onDone: (order: string[]) => void;
 }
 
-const sensorOptions: PointerSensorOptions = {
-  activationConstraint: { distance: 3 },
-};
+/* ---- sensors: мышь + тач с порогом 3 px ---- */
+const sensors = useSensors(
+  useSensor(MouseSensor),
+  useSensor(TouchSensor, {
+    activationConstraint: { distance: 3 },
+  })
+);
 
+/* ---- основной компонент ---- */
 export default function Rank({ list, idToText, onDone }: Props) {
+  /* превращаем id[] => Item[] */
   const [items, setItems] = useState<Item[]>(
     list.map((id) => ({ id, text: idToText(id) }))
   );
-
-  const sensors = useSensors(useSensor(PointerSensor, sensorOptions));
 
   const handleDragEnd = (e: any) => {
     const { active, over } = e;
