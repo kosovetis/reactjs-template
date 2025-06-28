@@ -17,8 +17,13 @@ import {
 type Item = { id: string; text: string };   // ⬅️ добавили тип
 
 function Row({ item }: { item: Item }) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: item.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: item.id });
 
   return (
     <div
@@ -26,6 +31,12 @@ function Row({ item }: { item: Item }) {
       {...attributes}
       {...listeners}
       style={{
+        // 🔒 отключаем выделение текста и системную лупу
+        WebkitUserSelect: "none",
+        userSelect: "none",
+        WebkitTouchCallout: "none",
+
+        // ----- существующие стили -----
         transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
         transition,
         padding: "8px",
@@ -35,10 +46,11 @@ function Row({ item }: { item: Item }) {
         cursor: "grab",
       }}
     >
-      {item.text}        {/* ⬅️ показываем текст, а не id */}
+      {item.text}
     </div>
   );
 }
+
 
 export default function Rank({
   list,                   // раньше: string[]  (id)
