@@ -26,6 +26,8 @@ function Row({ item }: { item: Item }) {
       {...attributes}
       {...listeners}
       style={{
+        WebkitUserSelect: "none",
+        WebkitTouchCallout: "none",
         transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
         transition,
         padding: "8px",
