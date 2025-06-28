@@ -5,4 +5,5 @@ export default defineConfig({
   base: "./",          // ← ключевая строка!
   resolve: { dedupe: ["react", "react-dom"] },
   plugins: [react()],
+  build: { sourcemap: true }
 });
