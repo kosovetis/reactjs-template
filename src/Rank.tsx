@@ -6,6 +6,8 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  MouseSensor,      // ← добавь
+  TouchSensor       // ← добавь
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -36,8 +38,6 @@ function Row({ item }: { item: Item }) {
         marginBottom: "6px",
         background: "#fafafa",
         cursor: "grab",
-         height: "400px",            // фикс. высота списка
-      overflowY: "auto",          // чтобы скроллился, если надо
       }}
     >
       {item.text}        {/* ⬅️ показываем текст, а не id */}
@@ -57,7 +57,13 @@ export default function Rank({
   /* превращаем id[] → Item[] с текстом */
   const [items, setItems] = useState<Item[]>(list.map(id => ({ id, text: idToText(id) })));
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+  useSensor(MouseSensor),
+  useSensor(TouchSensor, {
+    // вместо distance используем короткий «долгий тап»
+    activationConstraint: { delay: 150, tolerance: 5 },
+  })
+);
 
   const handleDragEnd = (e: any) => {
     const { active, over } = e;
