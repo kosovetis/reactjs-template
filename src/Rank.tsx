@@ -13,6 +13,24 @@ import {
   verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type PointerSensorOptions,   // ← добавили тип
+} from "@dnd-kit/core";
+const sensorOptions: PointerSensorOptions = {
+  activationConstraint: {
+    distance: 3,   // пикселей: «схватить» можно любым первым движением
+  },
+};
+
+export default function Rank({ list, idToText, onDone }: Props) {
+  const sensors = useSensors(useSensor(PointerSensor, sensorOptions));
+  // остальной код остаётся без изменений
+}
 
 type Item = { id: string; text: string };   // ⬅️ добавили тип
 
