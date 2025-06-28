@@ -49,21 +49,23 @@ export default function Rank({
   list,                   // раньше: string[]  (id)
   onDone,
   idToText,               // ⬅️ передадим функцию поиска текста
+  title                   // ⬅️ добавили заголовок
 }: {
   list: string[];
   onDone: (order: string[]) => void;
   idToText: (id: string) => string;
+  title: string;          // ⬅️ пропс для заголовка
 }) {
   /* превращаем id[] → Item[] с текстом */
   const [items, setItems] = useState<Item[]>(list.map(id => ({ id, text: idToText(id) })));
 
   const sensors = useSensors(
-  useSensor(MouseSensor),
-  useSensor(TouchSensor, {
-    // вместо distance используем короткий «долгий тап»
-    activationConstraint: { delay: 150, tolerance: 5 },
-  })
-);
+    useSensor(MouseSensor),
+    useSensor(TouchSensor, {
+      // вместо distance используем короткий «долгий тап»
+      activationConstraint: { delay: 150, tolerance: 5 },
+    })
+  );
 
   const handleDragEnd = (e: any) => {
     const { active, over } = e;
@@ -77,7 +79,7 @@ export default function Rank({
   return (
     <div style={{ padding: 16, maxWidth: 600, margin: "0 auto" }}>
       <h1 style={{ fontSize: 24, marginBottom: 12 }}>
-        Ранжируй 5 фраз (сверху — самая «ваша»)
+        {title}  {/* ⬅️ используем переданный заголовок */}
       </h1>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -95,4 +97,3 @@ export default function Rank({
     </div>
   );
 }
-

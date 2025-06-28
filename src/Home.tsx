@@ -1,7 +1,8 @@
 // src/Home.tsx
 import { useState } from "react";
-import { blocks } from "./phrases";
+import { blocks, questions, rankingTitles } from "./phrases";
 import Rank from "./Rank";
+
 const idToText = (id: string) => {
   for (const block of blocks) {
     const found = block.find(f => f.id === id);
@@ -9,6 +10,7 @@ const idToText = (id: string) => {
   }
   return id; // fallback
 };
+
 export default function Home() {
   /* --------------------- состояния --------------------- */
   const [blockIndex, setBlockIndex] = useState(0);     // какой из 7-ми блоков
@@ -42,18 +44,19 @@ export default function Home() {
   /* --------------------- экран ранжирования ------------ */
   if (showRank) {
     return (
-  <Rank
-    list={selected}
-    idToText={idToText}     // ⬅️ передаём
-    onDone={handleRankDone}
-  />
-);
+      <Rank
+        list={selected}
+        idToText={idToText}
+        onDone={handleRankDone}
+        title={rankingTitles[blockIndex]} // ⬅️ передаём заголовок для ранжирования
+      />
+    );
   }
 
   /* --------------------- экран выбора 5 фраз ------------ */
   return (
     <div className="p-4 flex flex-col space-y-4 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold">Выберите 5 фраз</h1>
+      <h1 className="text-2xl font-bold">{questions[blockIndex]}</h1>
 
       {/* список фраз текущего блока столбиком */}
       <div>
