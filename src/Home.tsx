@@ -1,8 +1,10 @@
 // src/Home.tsx
 import { useState } from "react";
-import { blocks, questions, rankingTitles } from "./phrases";
+import { blocks, questions, rankingTitles, idToArch } from "./phrases";
 import Rank from "./Rank";
+import Results from "./Results";
 
+// вспомогательная функция поиска текста по id
 const idToText = (id: string) => {
   for (const block of blocks) {
     const found = block.find(f => f.id === id);
@@ -14,8 +16,10 @@ const idToText = (id: string) => {
 export default function Home() {
   /* --------------------- состояния --------------------- */
   const [blockIndex, setBlockIndex] = useState(0);     // какой из 7-ми блоков
-  const [selected, setSelected]     = useState<string[]>([]);
-  const [showRank, setShowRank]     = useState(false); // false = экран чек-боксов
+  const [selected, setSelected] = useState<string[]>([]);
+  const [showRank, setShowRank] = useState(false);     // экран ранжирования
+  const [results, setResults] = useState<{ blockIndex: number; selected: string[]; ranked: string[] }[]>([]);
+  const [showResults, setShowResults] = useState(false);
 
   /* -------------------- логика выбора ------------------ */
   const toggle = (id: string) => {
@@ -28,18 +32,40 @@ export default function Home() {
 
   /* -------------------- обработка «Готово» из Rank ----- */
   const handleRankDone = (order: string[]) => {
-    // здесь потом Telegram.WebApp.sendData(...)
-    console.log("итоговый порядок:", order);
+    const newResult = {
+      blockIndex,
+      selected,
+      ranked: order
+    };
 
-    // 👉 если есть ещё блоки — показываем следующий
     if (blockIndex < blocks.length - 1) {
+      setResults(prev => [...prev, newResult]);
       setBlockIndex(blockIndex + 1);
       setSelected([]);
       setShowRank(false);
     } else {
-      alert("Все блоки пройдены, спасибо!");
+      setResults(prev => [...prev, newResult]);
+      setShowResults(true);
     }
   };
+
+  /* --------------------- экран итогов ----------------- */
+  if (showResults) {
+    return (
+      <Results
+        results={results}
+        onRestart={() => {
+          setBlockIndex(0);
+          setSelected([]);
+          setShowRank(false);
+          setShowResults(false);
+          setResults([]);
+        }}
+        idToText={idToText}
+        idToArch={idToArch}
+      />
+    );
+  }
 
   /* --------------------- экран ранжирования ------------ */
   if (showRank) {
@@ -48,7 +74,7 @@ export default function Home() {
         list={selected}
         idToText={idToText}
         onDone={handleRankDone}
-        title={rankingTitles[blockIndex]} // ⬅️ передаём заголовок для ранжирования
+        title={rankingTitles[blockIndex]}
       />
     );
   }
