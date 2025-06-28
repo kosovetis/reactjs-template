@@ -1,4 +1,3 @@
-// src/Rank.tsx
 import { useState } from "react";
 import {
   DndContext,
@@ -6,6 +5,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  type PointerSensorOptions,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -13,35 +13,12 @@ import {
   verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type PointerSensorOptions,   // ← добавили тип
-} from "@dnd-kit/core";
-const sensorOptions: PointerSensorOptions = {
-  activationConstraint: {
-    distance: 3,   // пикселей: «схватить» можно любым первым движением
-  },
-};
 
-export default function Rank({ list, idToText, onDone }: Props) {
-  const sensors = useSensors(useSensor(PointerSensor, sensorOptions));
-  // остальной код остаётся без изменений
-}
-
-type Item = { id: string; text: string };   // ⬅️ добавили тип
+type Item = { id: string; text: string };
 
 function Row({ item }: { item: Item }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: item.id });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: item.id });
 
   return (
     <div
@@ -49,12 +26,9 @@ function Row({ item }: { item: Item }) {
       {...attributes}
       {...listeners}
       style={{
-        // 🔒 отключаем выделение текста и системную лупу
         WebkitUserSelect: "none",
         userSelect: "none",
         WebkitTouchCallout: "none",
-
-        // ----- существующие стили -----
         transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
         transition,
         padding: "8px",
@@ -69,26 +43,28 @@ function Row({ item }: { item: Item }) {
   );
 }
 
-
-export default function Rank({
-  list,                   // раньше: string[]  (id)
-  onDone,
-  idToText,               // ⬅️ передадим функцию поиска текста
-}: {
+interface Props {
   list: string[];
-  onDone: (order: string[]) => void;
   idToText: (id: string) => string;
-}) {
-  /* превращаем id[] → Item[] с текстом */
-  const [items, setItems] = useState<Item[]>(list.map(id => ({ id, text: idToText(id) })));
+  onDone: (order: string[]) => void;
+}
 
-  const sensors = useSensors(useSensor(PointerSensor));
+const sensorOptions: PointerSensorOptions = {
+  activationConstraint: { distance: 3 },
+};
+
+export default function Rank({ list, idToText, onDone }: Props) {
+  const [items, setItems] = useState<Item[]>(
+    list.map((id) => ({ id, text: idToText(id) }))
+  );
+
+  const sensors = useSensors(useSensor(PointerSensor, sensorOptions));
 
   const handleDragEnd = (e: any) => {
     const { active, over } = e;
     if (active.id !== over.id) {
-      const oldIndex = items.findIndex(i => i.id === active.id);
-      const newIndex = items.findIndex(i => i.id === over.id);
+      const oldIndex = items.findIndex((i) => i.id === active.id);
+      const newIndex = items.findIndex((i) => i.id === over.id);
       setItems(arrayMove(items, oldIndex, newIndex));
     }
   };
@@ -99,19 +75,27 @@ export default function Rank({
         Ранжируй 5 фраз (сверху — самая «ваша»)
       </h1>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-          {items.map(item => <Row key={item.id} item={item} />)}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={items.map((i) => i.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {items.map((item) => (
+            <Row key={item.id} item={item} />
+          ))}
         </SortableContext>
       </DndContext>
 
       <button
         style={{ marginTop: 12, padding: "8px 16px" }}
-        onClick={() => onDone(items.map(i => i.id))}
+        onClick={() => onDone(items.map((i) => i.id))}
       >
         Готово
       </button>
     </div>
   );
 }
-
