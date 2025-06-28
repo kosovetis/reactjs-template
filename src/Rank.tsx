@@ -36,6 +36,8 @@ function Row({ item }: { item: Item }) {
         marginBottom: "6px",
         background: "#fafafa",
         cursor: "grab",
+         height: "400px",            // фикс. высота списка
+      overflowY: "auto",          // чтобы скроллился, если надо
       }}
     >
       {item.text}        {/* ⬅️ показываем текст, а не id */}
