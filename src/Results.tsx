@@ -129,41 +129,59 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     color: "#6b7280"
   };
 
-  // Обновленная плашка с синим цветом, белым шрифтом и эмоджи девушки
+  // Обновленная плашка с синим цветом, белым шрифтом и крупным эмоджи девушки
   const ctaBlockStyle = {
     padding: "32px",
-    backgroundColor: "#3b82f6", // Синий цвет вместо желтого
+    backgroundColor: "#3b82f6",
     borderRadius: "12px",
     textAlign: "center" as const,
     marginBottom: "32px",
-    border: "2px solid #2563eb", // Синяя рамка
+    border: "2px solid #2563eb",
     position: "relative" as const
   };
 
-  const ctaTextStyle = {
-    fontSize: "18px",
-    lineHeight: "1.6",
+  // Большой эмоджи как на плашках архетипов
+  const ctaEmojiStyle = {
+    fontSize: "48px",
+    marginBottom: "20px",
+    display: "block",
+    textAlign: "center" as const
+  };
+
+  // Заголовок CTA
+  const ctaHeadlineStyle = {
+    fontSize: "22px",
+    fontWeight: "700",
+    lineHeight: "1.3",
     marginBottom: "16px",
     fontFamily: "'Montserrat', sans-serif",
-    color: "white", // Белый цвет текста
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "12px"
+    color: "white"
+  };
+
+  // Основной текст CTA
+  const ctaTextStyle = {
+    fontSize: "16px",
+    lineHeight: "1.5",
+    marginBottom: "24px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "white",
+    opacity: 0.95
   };
 
   const ctaButtonStyle = {
     display: "inline-block",
-    backgroundColor: "white", // Белая кнопка на синем фоне
-    color: "#3b82f6", // Синий текст на кнопке
+    backgroundColor: "white",
+    color: "#3b82f6",
     padding: "16px 32px",
     borderRadius: "8px",
     fontSize: "16px",
-    fontWeight: "600",
+    fontWeight: "700",
     textDecoration: "none",
     fontFamily: "'Montserrat', sans-serif",
-    transition: "background-color 0.2s ease",
-    border: "2px solid white"
+    transition: "all 0.2s ease",
+    border: "2px solid white",
+    textTransform: "uppercase" as const,
+    letterSpacing: "0.5px"
   };
 
   const restartButtonStyle = {
@@ -190,8 +208,9 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
         return (
           <div key={arch} style={archetypeContainerStyle}>
             <span style={emojiStyle}>{data.emoji}</span>
-            <h2 style={{ ...archetypeNameStyle, color: data.color }}>
-              {index === 0 ? "ОСНОВНОЙ: " : "ДОПОЛНИТЕЛЬНЫЙ: "}{data.name}
+            <h2 style={{ ...archetypeNameStyle, color: "#1f2937" }}>
+              <span style={{ color: "#1f2937" }}>{index === 0 ? "ОСНОВНОЙ: " : "ДОПОЛНИТЕЛЬНЫЙ: "}</span>
+              <span style={{ color: data.color }}>{data.name}</span>
             </h2>
             <p style={descriptionStyle}>{data.description}</p>
 
@@ -213,8 +232,14 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
       })}
 
       <div style={ctaBlockStyle}>
+        <span style={ctaEmojiStyle}>👩‍💼</span>
+        <h3 style={ctaHeadlineStyle}>
+          Хотите извлечь максимум из ваших архетипов?
+        </h3>
         <p style={ctaTextStyle}>
-          👩‍💼 О том, как использовать результаты этого теста в вашем бизнесе, что еще стоит за каждым архетипом, и как это может вас усилить, вы можете узнать в моем Гайде по архетипам.
+          Узнайте, как использовать полученные результаты для роста бизнеса, 
+          какие стратегии работают для каждого архетипа, и получите готовые 
+          решения для позиционирования в моем <strong>подробном Гайде по архетипам брендов</strong>.
         </p>
         <a
           href="https://kosovetis.com"
@@ -224,13 +249,17 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "#f3f4f6";
             e.currentTarget.style.color = "#1f2937";
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "white";
             e.currentTarget.style.color = "#3b82f6";
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "none";
           }}
         >
-          ПОЛУЧИТЬ ГАЙД
+          Получить Гайд
         </a>
       </div>
 
