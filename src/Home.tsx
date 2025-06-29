@@ -87,6 +87,8 @@ export default function Home() {
         onDone={handleRankDone}
         onBack={() => setShowRank(false)}
         title={rankingTitles[blockIndex]}
+        blockIndex={blockIndex}
+        totalBlocks={blocks.length}
       />
     );
   }
@@ -121,23 +123,23 @@ export default function Home() {
     fontWeight: "500",
     fontFamily: "'Montserrat', sans-serif",
     transition: "all 0.2s ease",
-    display: "block",
-    margin: "0 auto"
+    display: "inline-block",
+    marginRight: blockIndex > 0 ? "12px" : "0"
   };
 
   const backButtonStyle = {
-    padding: "8px 16px",
+    padding: "12px 20px",
     background: "transparent",
     color: "#6b7280",
-    borderRadius: "6px",
+    borderRadius: "8px",
     cursor: "pointer",
     border: "1px solid #d1d5db",
-    fontSize: "14px",
+    fontSize: "16px",
     fontWeight: "400",
     fontFamily: "'Montserrat', sans-serif",
     transition: "all 0.2s ease",
-    display: "block",
-    margin: "0 auto 16px auto"
+    display: "inline-block",
+    marginRight: "12px"
   };
 
   const labelStyle = {
@@ -160,7 +162,7 @@ export default function Home() {
   const questionStyle = {
     fontSize: "20px",
     fontWeight: "600",
-    textAlign: "left" as const, // Изменено на левое выравнивание
+    textAlign: "left" as const,
     marginBottom: "8px",
     fontFamily: "'Montserrat', sans-serif",
     color: "#1f2937",
@@ -182,20 +184,22 @@ export default function Home() {
   };
 
   const counterStyle = {
-    fontSize: "12px",
+    fontSize: "14px",
     fontWeight: "500",
     textAlign: "center" as const,
     fontFamily: "'Montserrat', sans-serif",
     color: "#6b7280",
     fontStyle: "italic",
     backgroundColor: "#f3f4f6",
-    padding: "6px 10px",
-    borderRadius: "4px",
-    display: "inline-block",
-    marginTop: "12px"
+    padding: "8px 12px",
+    borderRadius: "6px",
+    display: "block",
+    marginTop: "16px",
+    width: "fit-content",
+    margin: "16px auto 0 auto"
   };
 
-  // Очищаем вопросы от фразы "выберите 5 вариантов"
+  // Очищаем вопросы от фразы "выберите 5 вариантов" и убираем скобки из "через 5 лет"
   const cleanedQuestion = questions[blockIndex]
     .replace(/\s*[Вв]ыберите ровно 5 вариантов\.?/g, '')
     .replace(/\s*[Вв]ыберите 5 наиболее подходящих вариантов\.?/g, '')
@@ -203,6 +207,7 @@ export default function Home() {
     .replace(/\s*([Вв]ыберите 5 наиболее подходящих пунктов)\.?/g, '')
     .replace(/\s*[Вв]ыберите 5\.?/g, '')
     .replace(/\s*\([^)]*выберите[^)]*\)/gi, '')
+    .replace(/\(через 5 лет\)/g, 'через 5 лет') // Убираем скобки из "через 5 лет"
     .trim()
     .replace(/:\s*$/, ''); // Убираем двоеточие в конце если оно осталось
 
@@ -246,36 +251,39 @@ export default function Home() {
         </div>
 
         <div className="text-center pt-4">
-          {blockIndex > 0 && (
-            <button
-              onClick={goBack}
-              style={backButtonStyle}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#f3f4f6";
-                e.currentTarget.style.color = "#374151";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "#6b7280";
-              }}
-            >
-              ← Назад
-            </button>
-          )}
-          
-          <button
-            disabled={selected.length !== 5}
-            onClick={() => setShowRank(true)}
-            style={buttonStyle}
-          >
-            {blockIndex === blocks.length - 1 ? "Готово" : "Дальше"}
-          </button>
-          
-          {/* Счетчик перенесен под кнопку */}
+          {/* Счетчик по центру */}
           <div>
             <span style={counterStyle}>
               Выбрано: {selected.length}/5
             </span>
+          </div>
+          
+          {/* Кнопки в одной строке */}
+          <div style={{ marginTop: "20px" }}>
+            {blockIndex > 0 && (
+              <button
+                onClick={goBack}
+                style={backButtonStyle}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#f3f4f6";
+                  e.currentTarget.style.color = "#374151";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "#6b7280";
+                }}
+              >
+                ← Назад
+              </button>
+            )}
+            
+            <button
+              disabled={selected.length !== 5}
+              onClick={() => setShowRank(true)}
+              style={buttonStyle}
+            >
+              {blockIndex === blocks.length - 1 ? "Готово" : "Дальше"}
+            </button>
           </div>
         </div>
       </div>

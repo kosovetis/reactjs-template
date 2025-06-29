@@ -25,7 +25,7 @@ function Row({ item, index }: { item: Item; index: number }) {
   const rowStyle = {
     WebkitUserSelect: "none" as const,
     WebkitTouchCallout: "none" as const,
-    touchAction: "none" as const,
+    touchAction: "manipulation" as const, // Изменено для лучшего скролла
     transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
     transition,
     padding: "16px",
@@ -81,13 +81,17 @@ export default function Rank({
   onDone,
   onBack,
   idToText,
-  title
+  title,
+  blockIndex,
+  totalBlocks
 }: {
   list: string[];
   onDone: (order: string[]) => void;
   onBack: () => void;
   idToText: (id: string) => string;
   title: string;
+  blockIndex: number;
+  totalBlocks: number;
 }) {
   const [items, setItems] = useState<Item[]>(list.map(id => ({ id, text: idToText(id) })));
 
@@ -99,7 +103,7 @@ export default function Rank({
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor, {
-      activationConstraint: { delay: 150, tolerance: 5 },
+      activationConstraint: { delay: 150, tolerance: 10 }, // Увеличена толерантность для лучшего скролла
     })
   );
 
@@ -112,19 +116,41 @@ export default function Rank({
     }
   };
 
+  // Прогресс-бар для страниц ранжирования
+  const progress = ((blockIndex + 1) / totalBlocks) * 100;
+  const progressBarStyle = {
+    position: "fixed" as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "4px",
+    backgroundColor: "#e5e7eb",
+    zIndex: 1000
+  };
+
+  const progressFillStyle = {
+    height: "100%",
+    backgroundColor: "#3b82f6",
+    width: `${progress}%`,
+    transition: "width 0.3s ease"
+  };
+
   const containerStyle = {
     padding: "24px",
     maxWidth: "700px",
     margin: "0 auto",
     fontFamily: "'Montserrat', sans-serif",
-    paddingBottom: "32px"
+    paddingBottom: "32px",
+    paddingTop: "20px", // Добавляем отступ сверху для прогресс-бара
+    minHeight: "100vh", // Обеспечиваем возможность скролла
+    overflowY: "auto" as const // Явно разрешаем скролл
   };
 
   const titleStyle = {
     fontSize: "20px",
     marginBottom: "12px",
     fontWeight: "600",
-    textAlign: "left" as const, // Изменено на левое выравнивание
+    textAlign: "left" as const,
     lineHeight: "1.4",
     fontFamily: "'Montserrat', sans-serif",
     color: "#1f2937"
@@ -156,73 +182,87 @@ export default function Rank({
     cursor: "pointer",
     fontFamily: "'Montserrat', sans-serif",
     transition: "background-color 0.2s ease",
-    display: "block",
-    marginLeft: "auto",
-    marginRight: "auto"
+    display: "inline-block",
+    marginRight: "12px"
   };
 
   const backButtonStyle = {
-    padding: "8px 16px",
+    padding: "12px 20px",
     background: "transparent",
     color: "#6b7280",
-    borderRadius: "6px",
+    borderRadius: "8px",
     cursor: "pointer",
     border: "1px solid #d1d5db",
-    fontSize: "14px",
+    fontSize: "16px",
     fontWeight: "400",
     fontFamily: "'Montserrat', sans-serif",
     transition: "all 0.2s ease",
-    display: "block",
-    margin: "0 auto 16px auto"
+    display: "inline-block",
+    marginRight: "12px"
   };
 
-  // Разделяем заголовок и инструкцию
+  const listContainerStyle = {
+    touchAction: "pan-y" as const, // Разрешаем вертикальный скролл
+    overflowY: "visible" as const
+  };
+
+  // Разделяем заголовок и инструкцию, убираем скобки
   const titleParts = title.split('(');
   const mainTitle = titleParts[0].trim();
-  const instruction = titleParts[1] ? '(' + titleParts[1] : '';
+  const instruction = titleParts[1] ? titleParts[1].replace(/[()]/g, '').replace(/нажмите на него/g, 'зажмите его') : '';
 
   return (
-    <div style={containerStyle}>
-      <h1 style={titleStyle}>
-        {mainTitle}
-      </h1>
-      
-      {instruction && (
-        <div style={instructionStyle}>
-          {instruction.replace(/[()]/g, '').replace(/нажмите на него/g, 'зажмите его')}
+    <div style={{ minHeight: "100vh", overflowY: "auto" }}>
+      {/* Прогресс-бар */}
+      <div style={progressBarStyle}>
+        <div style={progressFillStyle}></div>
+      </div>
+
+      <div style={containerStyle}>
+        <h1 style={titleStyle}>
+          {mainTitle}
+        </h1>
+        
+        {instruction && (
+          <div style={instructionStyle}>
+            {instruction}
+          </div>
+        )}
+
+        <div style={listContainerStyle}>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
+              {items.map((item, index) => <Row key={item.id} item={item} index={index} />)}
+            </SortableContext>
+          </DndContext>
         </div>
-      )}
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-          {items.map((item, index) => <Row key={item.id} item={item} index={index} />)}
-        </SortableContext>
-      </DndContext>
+        <div style={{ textAlign: "center" }}>
+          {/* Кнопки в одной строке */}
+          <button
+            onClick={onBack}
+            style={backButtonStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#f3f4f6";
+              e.currentTarget.style.color = "#374151";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#6b7280";
+            }}
+          >
+            ← Назад
+          </button>
 
-      <div style={{ textAlign: "center" }}>
-        <button
-          onClick={onBack}
-          style={backButtonStyle}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#f3f4f6";
-            e.currentTarget.style.color = "#374151";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.color = "#6b7280";
-          }}
-        >
-          ← Назад
-        </button>
-
-        <button
-          style={buttonStyle}
-          onClick={() => onDone(items.map(i => i.id))}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
-        >
-          Готово
-        </button>
+          <button
+            style={buttonStyle}
+            onClick={() => onDone(items.map(i => i.id))}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
+          >
+            Готово
+          </button>
+        </div>
       </div>
     </div>
   );
