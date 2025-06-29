@@ -102,14 +102,54 @@ export default function Home() {
     transform: "scale(1.2)"
   };
 
+  // Новые стили для вопроса и инструкций
+  const questionStyle = {
+    fontSize: "14px", // Уменьшили с 24px до 14px (более чем вдвое)
+    fontWeight: "600",
+    textAlign: "center" as const,
+    marginBottom: "8px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#1f2937",
+    lineHeight: "1.4"
+  };
+
+  const instructionStyle = {
+    fontSize: "12px",
+    fontWeight: "400",
+    textAlign: "center" as const,
+    marginBottom: "24px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#6b7280", // Более светлый цвет для инструкций
+    fontStyle: "italic", // Курсив для выделения
+    backgroundColor: "#f9fafb", // Легкий фон
+    padding: "8px 12px",
+    borderRadius: "6px",
+    border: "1px solid #e5e7eb"
+  };
+
+  const counterStyle = {
+    fontSize: "12px",
+    fontWeight: "500",
+    textAlign: "center" as const,
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#6b7280",
+    fontStyle: "italic",
+    backgroundColor: "#f3f4f6",
+    padding: "6px 10px",
+    borderRadius: "4px",
+    display: "inline-block"
+  };
+
   return (
     <div className="p-6 flex flex-col space-y-6 max-w-2xl mx-auto">
-      <h1 
-        className="text-2xl font-bold text-center"
-        style={{ fontFamily: "'Montserrat', sans-serif" }}
-      >
-        {questions[blockIndex]}
-      </h1>
+      <div>
+        <h1 style={questionStyle}>
+          {questions[blockIndex]}
+        </h1>
+        <div style={instructionStyle}>
+          Выберите ровно 5 вариантов
+        </div>
+      </div>
 
       <div className="space-y-2">
         {blocks[blockIndex].map(({ id, text }) => (
@@ -142,12 +182,11 @@ export default function Home() {
           {blockIndex === blocks.length - 1 ? "Готово" : "Дальше"}
         </button>
         
-        <p 
-          className="mt-3 text-sm text-gray-600"
-          style={{ fontFamily: "'Montserrat', sans-serif" }}
-        >
-          Выбрано: {selected.length}/5
-        </p>
+        <div className="mt-3">
+          <span style={counterStyle}>
+            Выбрано: {selected.length}/5
+          </span>
+        </div>
       </div>
     </div>
   );

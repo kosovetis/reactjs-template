@@ -113,13 +113,27 @@ export default function Rank({
   };
 
   const titleStyle = {
-    fontSize: "24px",
-    marginBottom: "24px",
+    fontSize: "16px", // Уменьшили с 24px до 16px
+    marginBottom: "12px",
     fontWeight: "600",
     textAlign: "center" as const,
     lineHeight: "1.4",
     fontFamily: "'Montserrat', sans-serif",
     color: "#1f2937"
+  };
+
+  const instructionStyle = {
+    fontSize: "12px",
+    fontWeight: "400",
+    textAlign: "center" as const,
+    marginBottom: "24px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#6b7280",
+    fontStyle: "italic",
+    backgroundColor: "#f9fafb",
+    padding: "8px 12px",
+    borderRadius: "6px",
+    border: "1px solid #e5e7eb"
   };
 
   const buttonStyle = {
@@ -139,11 +153,22 @@ export default function Rank({
     marginRight: "auto"
   };
 
+  // Разделяем заголовок и инструкцию
+  const titleParts = title.split('(');
+  const mainTitle = titleParts[0].trim();
+  const instruction = titleParts[1] ? '(' + titleParts[1] : '';
+
   return (
     <div style={containerStyle}>
       <h1 style={titleStyle}>
-        {title}
+        {mainTitle}
       </h1>
+      
+      {instruction && (
+        <div style={instructionStyle}>
+          {instruction.replace(/[()]/g, '')} {/* Убираем скобки из инструкции */}
+        </div>
+      )}
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
