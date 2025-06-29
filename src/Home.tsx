@@ -128,7 +128,7 @@ export default function Home() {
   };
 
   const backButtonStyle = {
-    padding: "12px 24px", // Изменено с "12px 20px" на "12px 24px" для выравнивания высоты
+    padding: "12px 24px",
     background: "transparent",
     color: "#6b7280",
     borderRadius: "8px",
@@ -199,18 +199,6 @@ export default function Home() {
     margin: "16px auto 0 auto"
   };
 
-  // Очищаем вопросы от фразы "выберите 5 вариантов" и убираем скобки из "через 5 лет"
-  const cleanedQuestion = questions[blockIndex]
-    .replace(/\s*[Вв]ыберите ровно 5 вариантов\.?/g, '')
-    .replace(/\s*[Вв]ыберите 5 наиболее подходящих вариантов\.?/g, '')
-    .replace(/\s*[Вв]ыберите 5 наиболее подходящих\.?/g, '')
-    .replace(/\s*([Вв]ыберите 5 наиболее подходящих пунктов)\.?/g, '')
-    .replace(/\s*[Вв]ыберите 5\.?/g, '')
-    .replace(/\s*\([^)]*выберите[^)]*\)/gi, '')
-    .replace(/\(через 5 лет\)/g, 'через 5 лет') // Убираем скобки из "через 5 лет"
-    .trim()
-    .replace(/:\s*$/, ''); // Убираем двоеточие в конце если оно осталось
-
   return (
     <div>
       {/* Прогресс-бар */}
@@ -221,7 +209,7 @@ export default function Home() {
       <div className="p-6 flex flex-col space-y-6 max-w-2xl mx-auto" style={{ paddingBottom: "32px", paddingTop: "20px" }}>
         <div>
           <h1 style={questionStyle}>
-            {cleanedQuestion}
+            {questions[blockIndex]}
           </h1>
           <div style={instructionStyle}>
             Выберите 5 наиболее подходящих вариантов
@@ -262,7 +250,7 @@ export default function Home() {
           <div style={{ 
             marginTop: "20px",
             display: "flex",
-            justifyContent: blockIndex > 0 ? "center" : "center", // Всегда центрируем
+            justifyContent: "center",
             alignItems: "center"
           }}>
             {blockIndex > 0 && (
