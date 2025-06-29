@@ -93,8 +93,10 @@ export default function Home() {
     );
   }
 
-  // Прогресс-бар
-  const progress = ((blockIndex + 1) / blocks.length) * 100;
+  // Прогресс-бар - учитываем, что каждый блок имеет 2 этапа: выбор и ранжирование
+  const totalSteps = blocks.length * 2; // выбор + ранжирование для каждого блока
+  const currentStep = blockIndex * 2 + 1; // текущий шаг (выбор вариантов)
+  const progress = (currentStep / totalSteps) * 100;
   const progressBarStyle = {
     position: "fixed" as const,
     top: 0,
