@@ -1,5 +1,5 @@
 // src/Results.tsx
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 
 const archetypeDescriptions = {
   caregiver: { name: "ЗАБОТЛИВЫЙ", emoji: "🤲", color: "#10B981", description: "Ваш бренд стремится помогать другим и заботиться о них. Вы ставите потребности клиентов выше собственной выгоды.", traits: ["Сострадание", "Щедрость", "Желание помочь", "Альтруизм"], examples: ["Johnson & Johnson", "Volvo", "UNICEF"] },
@@ -23,6 +23,11 @@ interface ResultsProps {
 }
 
 export default function Results({ results, onRestart, idToArch }: ResultsProps) {
+  // Прокрутка к началу страницы при загрузке компонента
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const archetypeScores = useMemo(() => {
     if (!results) return {};
     const scores: Record<string, number> = {};
@@ -48,7 +53,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     maxWidth: "800px",
     margin: "0 auto",
     fontFamily: "'Montserrat', sans-serif",
-    paddingBottom: "32px" // Добавляем отступ внизу
+    paddingBottom: "32px"
   };
 
   const mainTitleStyle = {
@@ -124,12 +129,15 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     color: "#6b7280"
   };
 
+  // Обновленная плашка с другим цветом и эмоджи
   const ctaBlockStyle = {
     padding: "32px",
-    backgroundColor: "#f3f4f6",
+    backgroundColor: "#fef3c7", // Желтоватый цвет для выделения
     borderRadius: "12px",
     textAlign: "center" as const,
-    marginBottom: "32px"
+    marginBottom: "32px",
+    border: "2px solid #f59e0b", // Желтая рамка для дополнительного выделения
+    position: "relative" as const
   };
 
   const ctaTextStyle = {
@@ -137,7 +145,11 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     lineHeight: "1.6",
     marginBottom: "16px",
     fontFamily: "'Montserrat', sans-serif",
-    color: "#374151"
+    color: "#92400e", // Темно-желтый цвет текста для лучшей читаемости
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "12px"
   };
 
   const ctaButtonStyle = {
@@ -163,7 +175,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     cursor: "pointer",
     padding: "8px 0",
     display: "block",
-    margin: "0 auto" // Центрируем кнопку
+    margin: "0 auto"
   };
 
   return (
@@ -177,13 +189,13 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
         return (
           <div key={arch} style={archetypeContainerStyle}>
             <span style={emojiStyle}>{data.emoji}</span>
-            <h2 style={{ ...archetypeNameStyle, color: data.color }}>
+            <h2 style={{ ...archetypeNameStyle, color: "black" }}>
               {index === 0 ? "ОСНОВНОЙ: " : "ДОПОЛНИТЕЛЬНЫЙ: "}{data.name}
             </h2>
             <p style={descriptionStyle}>{data.description}</p>
 
             <div>
-              <h3 style={sectionTitleStyle}>Ключевые черты:</h3>
+                            <h3 style={sectionTitleStyle}>Ключевые черты:</h3>
               <ul style={traitsListStyle}>
                 {data.traits.map((trait, idx) => (
                   <li key={idx} style={traitItemStyle}>{trait}</li>
@@ -201,10 +213,10 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
 
       <div style={ctaBlockStyle}>
         <p style={ctaTextStyle}>
-          Помимо теста я написала гайд, который поможет узнать больше об архетипе вашего бренда: его сильных и слабых сторонах, целях и ценностях.
+          О том, как использовать это в вашем бизнесе, что еще стоит за каждым архетипом, и как это может вас усилить
         </p>
         <p style={ctaTextStyle}>
-          Но самое главное — о том, как применять все это на практике.
+          вы можете узнать в моем Гайде по архетипам.
         </p>
         <a
           href="https://kosovetis.com"

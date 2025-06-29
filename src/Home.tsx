@@ -1,5 +1,5 @@
 // src/Home.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { blocks, questions, rankingTitles, idToArch } from "./phrases";
 import Rank from "./Rank";
 import Results from "./Results";
@@ -18,6 +18,11 @@ export default function Home() {
   const [showRank, setShowRank] = useState(false);
   const [results, setResults] = useState<{ blockIndex: number; selected: string[]; ranked: string[] }[]>([]);
   const [showResults, setShowResults] = useState(false);
+
+  // Прокрутка к началу страницы при изменении блока
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [blockIndex, showRank, showResults]);
 
   const toggle = (id: string) => {
     setSelected(prev =>
@@ -86,6 +91,25 @@ export default function Home() {
     );
   }
 
+  // Прогресс-бар
+  const progress = ((blockIndex + 1) / blocks.length) * 100;
+  const progressBarStyle = {
+    position: "fixed" as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "4px",
+    backgroundColor: "#e5e7eb",
+    zIndex: 1000
+  };
+
+  const progressFillStyle = {
+    height: "100%",
+    backgroundColor: "#3b82f6",
+    width: `${progress}%`,
+    transition: "width 0.3s ease"
+  };
+
   const buttonStyle = {
     padding: "12px 24px",
     background: selected.length === 5 ? "#2563eb" : "#9ca3af",
@@ -134,9 +158,9 @@ export default function Home() {
   };
 
   const questionStyle = {
-    fontSize: "20px", // Увеличен размер шрифта вопроса
+    fontSize: "20px",
     fontWeight: "600",
-    textAlign: "center" as const,
+    textAlign: "left" as const, // Изменено на левое выравнивание
     marginBottom: "8px",
     fontFamily: "'Montserrat', sans-serif",
     color: "#1f2937",
@@ -167,75 +191,92 @@ export default function Home() {
     backgroundColor: "#f3f4f6",
     padding: "6px 10px",
     borderRadius: "4px",
-    display: "inline-block"
+    display: "inline-block",
+    marginTop: "12px"
   };
 
-  // Убираем текст "выберите ровно 5 вариантов" из вопроса
-  const cleanedQuestion = questions[blockIndex].replace(/\s*Выберите ровно 5 вариантов\.?/g, '').replace(/\s*выберите ровно 5 вариантов\.?/g, '');
+  // Очищаем вопросы от фразы "выберите 5 вариантов"
+  const cleanedQuestion = questions[blockIndex]
+    .replace(/\s*[Вв]ыберите ровно 5 вариантов\.?/g, '')
+    .replace(/\s*[Вв]ыберите 5 наиболее подходящих вариантов\.?/g, '')
+    .replace(/\s*[Вв]ыберите 5 наиболее подходящих\.?/g, '')
+    .replace(/\s*[Вв]ыберите 5 наиболее подходящих пунктов\.?/g, '')
+    .replace(/\s*[Вв]ыберите 5\.?/g, '')
+    .replace(/\s*\([^)]*выберите[^)]*\)/gi, '')
+    .trim()
+    .replace(/:\s*$/, ''); // Убираем двоеточие в конце если оно осталось
 
   return (
-    <div className="p-6 flex flex-col space-y-6 max-w-2xl mx-auto" style={{ paddingBottom: "32px" }}>
-      <div>
-        <h1 style={questionStyle}>
-          {cleanedQuestion}
-        </h1>
-        <div style={instructionStyle}>
-          Выберите 5 наиболее подходящих вариантов
+    <div>
+      {/* Прогресс-бар */}
+      <div style={progressBarStyle}>
+        <div style={progressFillStyle}></div>
+      </div>
+
+      <div className="p-6 flex flex-col space-y-6 max-w-2xl mx-auto" style={{ paddingBottom: "32px", paddingTop: "20px" }}>
+        <div>
+          <h1 style={questionStyle}>
+            {cleanedQuestion}
+          </h1>
+          <div style={instructionStyle}>
+            Выберите 5 наиболее подходящих вариантов
+          </div>
         </div>
-      </div>
 
-      <div className="space-y-2">
-        {blocks[blockIndex].map(({ id, text }) => (
-          <label 
-            key={id} 
-            style={{
-              ...labelStyle,
-              backgroundColor: selected.includes(id) ? "#f0f9ff" : "transparent"
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={selected.includes(id)}
-              onChange={() => toggle(id)}
-              style={checkboxStyle}
-            />
-            <span style={{ fontFamily: "'Montserrat', sans-serif" }}>
-              {text}
-            </span>
-          </label>
-        ))}
-      </div>
+        <div className="space-y-2">
+          {blocks[blockIndex].map(({ id, text }) => (
+            <label 
+              key={id} 
+              style={{
+                ...labelStyle,
+                backgroundColor: selected.includes(id) ? "#f0f9ff" : "transparent"
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={selected.includes(id)}
+                onChange={() => toggle(id)}
+                style={checkboxStyle}
+              />
+              <span style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                {text}
+              </span>
+            </label>
+          ))}
+        </div>
 
-      <div className="text-center pt-4">
-        {blockIndex > 0 && (
+        <div className="text-center pt-4">
+          {blockIndex > 0 && (
+            <button
+              onClick={goBack}
+              style={backButtonStyle}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#f3f4f6";
+                e.currentTarget.style.color = "#374151";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "#6b7280";
+              }}
+            >
+              ← Назад
+            </button>
+          )}
+          
           <button
-            onClick={goBack}
-            style={backButtonStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#f3f4f6";
-              e.currentTarget.style.color = "#374151";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#6b7280";
-            }}
+            disabled={selected.length !== 5}
+            onClick={() => setShowRank(true)}
+            style={buttonStyle}
           >
-            ← Назад
+            {blockIndex === blocks.length - 1 ? "Готово" : "Дальше"}
           </button>
-        )}
-        
-        <button
-          disabled={selected.length !== 5}
-          onClick={() => setShowRank(true)}
-          style={buttonStyle}
-        >
-          {blockIndex === blocks.length - 1 ? "Готово" : "Дальше"}
-        </button>
-        
-        <div className="mt-3">
-          <span style={counterStyle}>
-            Выбрано: {selected.length}/5
-          </span>
+          
+          {/* Счетчик перенесен под кнопку */}
+          <div>
+            <span style={counterStyle}>
+              Выбрано: {selected.length}/5
+            </span>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 // src/Rank.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DndContext,
   closestCenter,
@@ -91,6 +91,11 @@ export default function Rank({
 }) {
   const [items, setItems] = useState<Item[]>(list.map(id => ({ id, text: idToText(id) })));
 
+  // Прокрутка к началу страницы при загрузке компонента
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor, {
@@ -112,14 +117,14 @@ export default function Rank({
     maxWidth: "700px",
     margin: "0 auto",
     fontFamily: "'Montserrat', sans-serif",
-    paddingBottom: "32px" // Добавляем отступ внизу
+    paddingBottom: "32px"
   };
 
   const titleStyle = {
-    fontSize: "20px", // Увеличен размер шрифта
+    fontSize: "20px",
     marginBottom: "12px",
     fontWeight: "600",
-    textAlign: "center" as const,
+    textAlign: "left" as const, // Изменено на левое выравнивание
     lineHeight: "1.4",
     fontFamily: "'Montserrat', sans-serif",
     color: "#1f2937"
@@ -184,7 +189,7 @@ export default function Rank({
       
       {instruction && (
         <div style={instructionStyle}>
-          {instruction.replace(/[()]/g, '')} {/* Убираем скобки из инструкции */}
+          {instruction.replace(/[()]/g, '').replace(/нажмите на него/g, 'зажмите его')}
         </div>
       )}
 
