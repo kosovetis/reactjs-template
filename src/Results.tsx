@@ -43,50 +43,180 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
 
   if (!results || !first) return <div>Ошибка: не удалось определить архетип</div>;
 
-  return (
-    <div className="p-6 max-w-3xl mx-auto space-y-10">
-      <h1 className="text-3xl font-bold text-center mb-4">Ваши архетипы:</h1>
+  const containerStyle = {
+    padding: "24px",
+    maxWidth: "800px",
+    margin: "0 auto",
+    fontFamily: "'Montserrat', sans-serif"
+  };
 
-      {[first, second].map(([arch]) => {
+  const mainTitleStyle = {
+    fontSize: "28px",
+    fontWeight: "700",
+    textAlign: "center" as const,
+    marginBottom: "32px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#1f2937"
+  };
+
+  const archetypeContainerStyle = {
+    marginBottom: "48px",
+    textAlign: "center" as const,
+    padding: "24px",
+    borderRadius: "16px",
+    backgroundColor: "#f9fafb",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
+  };
+
+  const emojiStyle = {
+    fontSize: "48px",
+    marginBottom: "16px",
+    display: "block"
+  };
+
+  const archetypeNameStyle = {
+    fontSize: "24px",
+    fontWeight: "700",
+    marginBottom: "16px",
+    fontFamily: "'Montserrat', sans-serif"
+  };
+
+  const descriptionStyle = {
+    fontSize: "18px",
+    lineHeight: "1.6",
+    maxWidth: "600px",
+    margin: "0 auto 24px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#374151"
+  };
+
+  const sectionTitleStyle = {
+    fontSize: "18px",
+    fontWeight: "600",
+    marginBottom: "12px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#1f2937"
+  };
+
+  const traitsListStyle = {
+    listStyle: "none",
+    padding: 0,
+    margin: "0 0 24px 0",
+    display: "flex",
+    flexWrap: "wrap" as const,
+    justifyContent: "center",
+    gap: "8px"
+  };
+
+  const traitItemStyle = {
+    background: "#e5e7eb",
+    padding: "6px 12px",
+    borderRadius: "20px",
+    fontSize: "14px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#374151"
+  };
+
+  const examplesStyle = {
+    fontSize: "16px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#6b7280"
+  };
+
+  const ctaBlockStyle = {
+    padding: "32px",
+    backgroundColor: "#f3f4f6",
+    borderRadius: "12px",
+    textAlign: "center" as const,
+    marginBottom: "32px"
+  };
+
+  const ctaTextStyle = {
+    fontSize: "18px",
+    lineHeight: "1.6",
+    marginBottom: "16px",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#374151"
+  };
+
+  const ctaButtonStyle = {
+    display: "inline-block",
+    backgroundColor: "#3b82f6",
+    color: "white",
+    padding: "16px 32px",
+    borderRadius: "8px",
+    fontSize: "16px",
+    fontWeight: "600",
+    textDecoration: "none",
+    fontFamily: "'Montserrat', sans-serif",
+    transition: "background-color 0.2s ease"
+  };
+
+  const restartButtonStyle = {
+    background: "none",
+    border: "none",
+    color: "#3b82f6",
+    fontSize: "16px",
+    fontFamily: "'Montserrat', sans-serif",
+    textDecoration: "underline",
+    cursor: "pointer",
+    padding: "8px 0"
+  };
+
+  return (
+    <div style={containerStyle}>
+      <h1 style={mainTitleStyle}>Ваши архетипы:</h1>
+
+      {[first, second].map(([arch], index) => {
         const data = archetypeDescriptions[arch as keyof typeof archetypeDescriptions];
         if (!data) return null;
 
         return (
-          <div key={arch} className="space-y-4 text-center">
-            <div style={{ fontSize: "48px" }}>{data.emoji}</div>
-            <h2 className="text-2xl font-bold" style={{ color: data.color }}>{data.name}</h2>
-            <p className="text-lg max-w-xl mx-auto">{data.description}</p>
+          <div key={arch} style={archetypeContainerStyle}>
+            <span style={emojiStyle}>{data.emoji}</span>
+            <h2 style={{ ...archetypeNameStyle, color: data.color }}>
+              {index === 0 ? "ОСНОВНОЙ: " : "ДОПОЛНИТЕЛЬНЫЙ: "}{data.name}
+            </h2>
+            <p style={descriptionStyle}>{data.description}</p>
 
             <div>
-              <h3 className="text-lg font-semibold mb-2">Ключевые черты:</h3>
-              <ul className="list-disc list-inside space-y-1">
-                {data.traits.map((trait, idx) => <li key={idx}>{trait}</li>)}
+              <h3 style={sectionTitleStyle}>Ключевые черты:</h3>
+              <ul style={traitsListStyle}>
+                {data.traits.map((trait, idx) => (
+                  <li key={idx} style={traitItemStyle}>{trait}</li>
+                ))}
               </ul>
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-2">Примеры брендов:</h3>
-              <p>{data.examples.join(", ")}</p>
+              <h3 style={sectionTitleStyle}>Примеры брендов:</h3>
+              <p style={examplesStyle}>{data.examples.join(", ")}</p>
             </div>
           </div>
         );
       })}
 
-      <div className="p-6 bg-gray-100 rounded-lg text-center space-y-4">
-        <p className="text-lg">Помимо теста я написала гайд, который поможет узнать больше об архетипе вашего бренда: его сильных и слабых сторонах, целях и ценностях.</p>
-        <p className="text-lg">Но самое главное — о том, как применять все это на практике.</p>
+      <div style={ctaBlockStyle}>
+        <p style={ctaTextStyle}>
+          Помимо теста я написала гайд, который поможет узнать больше об архетипе вашего бренда: его сильных и слабых сторонах, целях и ценностях.
+        </p>
+        <p style={ctaTextStyle}>
+          Но самое главное — о том, как применять все это на практике.
+        </p>
         <a
           href="https://kosovetis.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          style={ctaButtonStyle}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
         >
           ПОЛУЧИТЬ ГАЙД
         </a>
       </div>
 
-      <div className="text-center">
-        <button onClick={onRestart} className="mt-6 text-blue-600 underline">
+      <div style={{ textAlign: "center" }}>
+        <button onClick={onRestart} style={restartButtonStyle}>
           Пройти тест заново
         </button>
       </div>

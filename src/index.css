@@ -1,6 +1,19 @@
+/* Подключаем шрифт Montserrat из Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Применяем Montserrat ко всему документу */
+* {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
+}
+
 body {
   background: var(--tg-theme-secondary-bg-color, white);
   padding: 0;
   margin: 0;
-  font-family: 'Montserrat', sans-serif !important;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
+}
+
+/* Дополнительно применяем к основным элементам для надежности */
+h1, h2, h3, h4, h5, h6, p, span, div, button, input, label, a {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
 }

@@ -6,8 +6,8 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  MouseSensor,      // ← добавь
-  TouchSensor       // ← добавь
+  MouseSensor,
+  TouchSensor
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -16,53 +16,82 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 
-type Item = { id: string; text: string };   // ⬅️ добавили тип
+type Item = { id: string; text: string };
 
-function Row({ item }: { item: Item }) {
+function Row({ item, index }: { item: Item; index: number }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: item.id });
+
+  const rowStyle = {
+    WebkitUserSelect: "none" as const,
+    WebkitTouchCallout: "none" as const,
+    touchAction: "none" as const,
+    transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
+    transition,
+    padding: "16px",
+    border: "2px solid #e5e7eb",
+    marginBottom: "8px",
+    background: "#ffffff",
+    cursor: "grab",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: "16px",
+    lineHeight: "1.5",
+    position: "relative" as const
+  };
 
   return (
     <div
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      style={{
-        WebkitUserSelect: "none",
-        WebkitTouchCallout: "none",
-        touchAction: "none",
-        transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
-        transition,
-        padding: "8px",
-        border: "1px solid #ccc",
-        marginBottom: "6px",
-        background: "#fafafa",
-        cursor: "grab",
-      }}
+      style={rowStyle}
     >
-      {item.text}        {/* ⬅️ показываем текст, а не id */}
+      <div 
+        style={{
+          position: "absolute",
+          left: "8px",
+          top: "50%",
+          transform: "translateY(-50%)",
+          background: "#3b82f6",
+          color: "white",
+          borderRadius: "50%",
+          width: "24px",
+          height: "24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "12px",
+          fontWeight: "600",
+          fontFamily: "'Montserrat', sans-serif"
+        }}
+      >
+        {index + 1}
+      </div>
+      <div style={{ marginLeft: "40px", fontFamily: "'Montserrat', sans-serif" }}>
+        {item.text}
+      </div>
     </div>
   );
 }
 
 export default function Rank({
-  list,                   // раньше: string[]  (id)
+  list,
   onDone,
-  idToText,               // ⬅️ передадим функцию поиска текста
-  title                   // ⬅️ добавили заголовок
+  idToText,
+  title
 }: {
   list: string[];
   onDone: (order: string[]) => void;
   idToText: (id: string) => string;
-  title: string;          // ⬅️ пропс для заголовка
+  title: string;
 }) {
-  /* превращаем id[] → Item[] с текстом */
   const [items, setItems] = useState<Item[]>(list.map(id => ({ id, text: idToText(id) })));
 
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor, {
-      // вместо distance используем короткий «долгий тап»
       activationConstraint: { delay: 150, tolerance: 5 },
     })
   );
@@ -76,21 +105,57 @@ export default function Rank({
     }
   };
 
+  const containerStyle = {
+    padding: "24px",
+    maxWidth: "700px",
+    margin: "0 auto",
+    fontFamily: "'Montserrat', sans-serif"
+  };
+
+  const titleStyle = {
+    fontSize: "24px",
+    marginBottom: "24px",
+    fontWeight: "600",
+    textAlign: "center" as const,
+    lineHeight: "1.4",
+    fontFamily: "'Montserrat', sans-serif",
+    color: "#1f2937"
+  };
+
+  const buttonStyle = {
+    marginTop: "24px",
+    padding: "12px 32px",
+    background: "#3b82f6",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "16px",
+    fontWeight: "500",
+    cursor: "pointer",
+    fontFamily: "'Montserrat', sans-serif",
+    transition: "background-color 0.2s ease",
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto"
+  };
+
   return (
-    <div style={{ padding: 16, maxWidth: 600, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 24, marginBottom: 12 }}>
-        {title}  {/* ⬅️ используем переданный заголовок */}
+    <div style={containerStyle}>
+      <h1 style={titleStyle}>
+        {title}
       </h1>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-          {items.map(item => <Row key={item.id} item={item} />)}
+          {items.map((item, index) => <Row key={item.id} item={item} index={index} />)}
         </SortableContext>
       </DndContext>
 
       <button
-        style={{ marginTop: 12, padding: "8px 16px" }}
+        style={buttonStyle}
         onClick={() => onDone(items.map(i => i.id))}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
       >
         Готово
       </button>

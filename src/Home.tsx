@@ -72,38 +72,83 @@ export default function Home() {
     );
   }
 
-  return (
-    <div className="p-4 flex flex-col space-y-4 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold">{questions[blockIndex]}</h1>
+  const buttonStyle = {
+    padding: "12px 24px",
+    background: selected.length === 5 ? "#2563eb" : "#9ca3af",
+    color: "white",
+    borderRadius: "8px",
+    cursor: selected.length === 5 ? "pointer" : "not-allowed",
+    border: "none",
+    fontSize: "16px",
+    fontWeight: "500",
+    fontFamily: "'Montserrat', sans-serif",
+    transition: "all 0.2s ease"
+  };
 
-      <div>
+  const labelStyle = {
+    display: "block",
+    marginBottom: "12px",
+    fontSize: "16px",
+    lineHeight: "1.5",
+    fontFamily: "'Montserrat', sans-serif",
+    cursor: "pointer",
+    padding: "8px",
+    borderRadius: "6px",
+    transition: "background-color 0.2s ease"
+  };
+
+  const checkboxStyle = {
+    marginRight: "10px",
+    transform: "scale(1.2)"
+  };
+
+  return (
+    <div className="p-6 flex flex-col space-y-6 max-w-2xl mx-auto">
+      <h1 
+        className="text-2xl font-bold text-center"
+        style={{ fontFamily: "'Montserrat', sans-serif" }}
+      >
+        {questions[blockIndex]}
+      </h1>
+
+      <div className="space-y-2">
         {blocks[blockIndex].map(({ id, text }) => (
-          <label key={id} style={{ display: "block", marginBottom: "8px" }}>
+          <label 
+            key={id} 
+            style={{
+              ...labelStyle,
+              backgroundColor: selected.includes(id) ? "#f0f9ff" : "transparent"
+            }}
+          >
             <input
               type="checkbox"
               checked={selected.includes(id)}
               onChange={() => toggle(id)}
-              style={{ marginRight: "6px" }}
+              style={checkboxStyle}
             />
-            {text}
+            <span style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              {text}
+            </span>
           </label>
         ))}
       </div>
 
-      <button
-        disabled={selected.length !== 5}
-        onClick={() => setShowRank(true)}
-        style={{
-          padding: "8px 16px",
-          background: selected.length === 5 ? "#2563eb" : "#9ca3af",
-          color: "white",
-          borderRadius: "4px",
-          cursor: selected.length === 5 ? "pointer" : "not-allowed",
-          border: "none"
-        }}
-      >
-        {blockIndex === blocks.length - 1 ? "Готово" : "Дальше"}
-      </button>
+      <div className="text-center pt-4">
+        <button
+          disabled={selected.length !== 5}
+          onClick={() => setShowRank(true)}
+          style={buttonStyle}
+        >
+          {blockIndex === blocks.length - 1 ? "Готово" : "Дальше"}
+        </button>
+        
+        <p 
+          className="mt-3 text-sm text-gray-600"
+          style={{ fontFamily: "'Montserrat', sans-serif" }}
+        >
+          Выбрано: {selected.length}/5
+        </p>
+      </div>
     </div>
   );
 }
