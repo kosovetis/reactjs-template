@@ -128,7 +128,7 @@ export default function Home() {
   };
 
   const backButtonStyle = {
-    padding: "12px 20px",
+    padding: "12px 24px", // Изменено с "12px 20px" на "12px 24px" для выравнивания высоты
     background: "transparent",
     color: "#6b7280",
     borderRadius: "8px",
@@ -258,8 +258,13 @@ export default function Home() {
             </span>
           </div>
           
-          {/* Кнопки в одной строке */}
-          <div style={{ marginTop: "20px" }}>
+          {/* Кнопки в одной строке, но центрируем если только кнопка "Дальше" */}
+          <div style={{ 
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: blockIndex > 0 ? "center" : "center", // Всегда центрируем
+            alignItems: "center"
+          }}>
             {blockIndex > 0 && (
               <button
                 onClick={goBack}

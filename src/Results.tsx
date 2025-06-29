@@ -129,14 +129,14 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     color: "#6b7280"
   };
 
-  // Обновленная плашка с другим цветом и эмоджи
+  // Обновленная плашка с синим цветом, белым шрифтом и эмоджи девушки
   const ctaBlockStyle = {
     padding: "32px",
-    backgroundColor: "#fef3c7", // Желтоватый цвет для выделения
+    backgroundColor: "#3b82f6", // Синий цвет вместо желтого
     borderRadius: "12px",
     textAlign: "center" as const,
     marginBottom: "32px",
-    border: "2px solid #f59e0b", // Желтая рамка для дополнительного выделения
+    border: "2px solid #2563eb", // Синяя рамка
     position: "relative" as const
   };
 
@@ -145,7 +145,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     lineHeight: "1.6",
     marginBottom: "16px",
     fontFamily: "'Montserrat', sans-serif",
-    color: "#92400e", // Темно-желтый цвет текста для лучшей читаемости
+    color: "white", // Белый цвет текста
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -154,15 +154,16 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
 
   const ctaButtonStyle = {
     display: "inline-block",
-    backgroundColor: "#3b82f6",
-    color: "white",
+    backgroundColor: "white", // Белая кнопка на синем фоне
+    color: "#3b82f6", // Синий текст на кнопке
     padding: "16px 32px",
     borderRadius: "8px",
     fontSize: "16px",
     fontWeight: "600",
     textDecoration: "none",
     fontFamily: "'Montserrat', sans-serif",
-    transition: "background-color 0.2s ease"
+    transition: "background-color 0.2s ease",
+    border: "2px solid white"
   };
 
   const restartButtonStyle = {
@@ -189,13 +190,13 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
         return (
           <div key={arch} style={archetypeContainerStyle}>
             <span style={emojiStyle}>{data.emoji}</span>
-            <h2 style={{ ...archetypeNameStyle, color: "black" }}>
+            <h2 style={{ ...archetypeNameStyle, color: data.color }}>
               {index === 0 ? "ОСНОВНОЙ: " : "ДОПОЛНИТЕЛЬНЫЙ: "}{data.name}
             </h2>
             <p style={descriptionStyle}>{data.description}</p>
 
             <div>
-                            <h3 style={sectionTitleStyle}>Ключевые черты:</h3>
+              <h3 style={sectionTitleStyle}>Ключевые черты:</h3>
               <ul style={traitsListStyle}>
                 {data.traits.map((trait, idx) => (
                   <li key={idx} style={traitItemStyle}>{trait}</li>
@@ -213,7 +214,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
 
       <div style={ctaBlockStyle}>
         <p style={ctaTextStyle}>
-          О том, как использовать это в вашем бизнесе, что еще стоит за каждым архетипом, и как это может вас усилить
+          👩‍💼 О том, как использовать это в вашем бизнесе, что еще стоит за каждым архетипом, и как это может вас усилить
         </p>
         <p style={ctaTextStyle}>
           вы можете узнать в моем Гайде по архетипам.
@@ -223,8 +224,14 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
           target="_blank"
           rel="noopener noreferrer"
           style={ctaButtonStyle}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#f3f4f6";
+            e.currentTarget.style.color = "#1f2937";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "white";
+            e.currentTarget.style.color = "#3b82f6";
+          }}
         >
           ПОЛУЧИТЬ ГАЙД
         </a>

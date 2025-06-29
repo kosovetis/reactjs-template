@@ -187,7 +187,7 @@ export default function Rank({
   };
 
   const backButtonStyle = {
-    padding: "12px 20px",
+    padding: "12px 32px", // Изменено с "12px 20px" на "12px 32px" для выравнивания высоты с кнопкой "Готово"
     background: "transparent",
     color: "#6b7280",
     borderRadius: "8px",
