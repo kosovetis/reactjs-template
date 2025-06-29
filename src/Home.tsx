@@ -45,6 +45,19 @@ export default function Home() {
     }
   };
 
+  const goBack = () => {
+    if (blockIndex > 0) {
+      // Находим предыдущий результат и восстанавливаем состояние
+      const previousResult = results[blockIndex - 1];
+      if (previousResult) {
+        setSelected(previousResult.selected);
+        setResults(prev => prev.slice(0, -1)); // Удаляем последний результат
+      }
+      setBlockIndex(blockIndex - 1);
+      setShowRank(false);
+    }
+  };
+
   if (showResults) {
     return (
       <Results
@@ -67,6 +80,7 @@ export default function Home() {
         list={selected}
         idToText={idToText}
         onDone={handleRankDone}
+        onBack={() => setShowRank(false)}
         title={rankingTitles[blockIndex]}
       />
     );
@@ -82,7 +96,24 @@ export default function Home() {
     fontSize: "16px",
     fontWeight: "500",
     fontFamily: "'Montserrat', sans-serif",
-    transition: "all 0.2s ease"
+    transition: "all 0.2s ease",
+    display: "block",
+    margin: "0 auto"
+  };
+
+  const backButtonStyle = {
+    padding: "8px 16px",
+    background: "transparent",
+    color: "#6b7280",
+    borderRadius: "6px",
+    cursor: "pointer",
+    border: "1px solid #d1d5db",
+    fontSize: "14px",
+    fontWeight: "400",
+    fontFamily: "'Montserrat', sans-serif",
+    transition: "all 0.2s ease",
+    display: "block",
+    margin: "0 auto 16px auto"
   };
 
   const labelStyle = {
@@ -102,9 +133,8 @@ export default function Home() {
     transform: "scale(1.2)"
   };
 
-  // Новые стили для вопроса и инструкций
   const questionStyle = {
-    fontSize: "14px", // Уменьшили с 24px до 14px (более чем вдвое)
+    fontSize: "20px", // Увеличен размер шрифта вопроса
     fontWeight: "600",
     textAlign: "center" as const,
     marginBottom: "8px",
@@ -114,14 +144,14 @@ export default function Home() {
   };
 
   const instructionStyle = {
-    fontSize: "12px",
+    fontSize: "14px",
     fontWeight: "400",
     textAlign: "center" as const,
     marginBottom: "24px",
     fontFamily: "'Montserrat', sans-serif",
-    color: "#6b7280", // Более светлый цвет для инструкций
-    fontStyle: "italic", // Курсив для выделения
-    backgroundColor: "#f9fafb", // Легкий фон
+    color: "#6b7280",
+    fontStyle: "italic",
+    backgroundColor: "#f9fafb",
     padding: "8px 12px",
     borderRadius: "6px",
     border: "1px solid #e5e7eb"
@@ -140,14 +170,17 @@ export default function Home() {
     display: "inline-block"
   };
 
+  // Убираем текст "выберите ровно 5 вариантов" из вопроса
+  const cleanedQuestion = questions[blockIndex].replace(/\s*Выберите ровно 5 вариантов\.?/g, '').replace(/\s*выберите ровно 5 вариантов\.?/g, '');
+
   return (
-    <div className="p-6 flex flex-col space-y-6 max-w-2xl mx-auto">
+    <div className="p-6 flex flex-col space-y-6 max-w-2xl mx-auto" style={{ paddingBottom: "32px" }}>
       <div>
         <h1 style={questionStyle}>
-          {questions[blockIndex]}
+          {cleanedQuestion}
         </h1>
         <div style={instructionStyle}>
-          Выберите ровно 5 вариантов
+          Выберите 5 наиболее подходящих вариантов
         </div>
       </div>
 
@@ -174,6 +207,23 @@ export default function Home() {
       </div>
 
       <div className="text-center pt-4">
+        {blockIndex > 0 && (
+          <button
+            onClick={goBack}
+            style={backButtonStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#f3f4f6";
+              e.currentTarget.style.color = "#374151";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#6b7280";
+            }}
+          >
+            ← Назад
+          </button>
+        )}
+        
         <button
           disabled={selected.length !== 5}
           onClick={() => setShowRank(true)}

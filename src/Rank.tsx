@@ -79,11 +79,13 @@ function Row({ item, index }: { item: Item; index: number }) {
 export default function Rank({
   list,
   onDone,
+  onBack,
   idToText,
   title
 }: {
   list: string[];
   onDone: (order: string[]) => void;
+  onBack: () => void;
   idToText: (id: string) => string;
   title: string;
 }) {
@@ -109,11 +111,12 @@ export default function Rank({
     padding: "24px",
     maxWidth: "700px",
     margin: "0 auto",
-    fontFamily: "'Montserrat', sans-serif"
+    fontFamily: "'Montserrat', sans-serif",
+    paddingBottom: "32px" // Добавляем отступ внизу
   };
 
   const titleStyle = {
-    fontSize: "16px", // Уменьшили с 24px до 16px
+    fontSize: "20px", // Увеличен размер шрифта
     marginBottom: "12px",
     fontWeight: "600",
     textAlign: "center" as const,
@@ -123,7 +126,7 @@ export default function Rank({
   };
 
   const instructionStyle = {
-    fontSize: "12px",
+    fontSize: "14px",
     fontWeight: "400",
     textAlign: "center" as const,
     marginBottom: "24px",
@@ -153,6 +156,21 @@ export default function Rank({
     marginRight: "auto"
   };
 
+  const backButtonStyle = {
+    padding: "8px 16px",
+    background: "transparent",
+    color: "#6b7280",
+    borderRadius: "6px",
+    cursor: "pointer",
+    border: "1px solid #d1d5db",
+    fontSize: "14px",
+    fontWeight: "400",
+    fontFamily: "'Montserrat', sans-serif",
+    transition: "all 0.2s ease",
+    display: "block",
+    margin: "0 auto 16px auto"
+  };
+
   // Разделяем заголовок и инструкцию
   const titleParts = title.split('(');
   const mainTitle = titleParts[0].trim();
@@ -176,14 +194,31 @@ export default function Rank({
         </SortableContext>
       </DndContext>
 
-      <button
-        style={buttonStyle}
-        onClick={() => onDone(items.map(i => i.id))}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
-      >
-        Готово
-      </button>
+      <div style={{ textAlign: "center" }}>
+        <button
+          onClick={onBack}
+          style={backButtonStyle}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#f3f4f6";
+            e.currentTarget.style.color = "#374151";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.color = "#6b7280";
+          }}
+        >
+          ← Назад
+        </button>
+
+        <button
+          style={buttonStyle}
+          onClick={() => onDone(items.map(i => i.id))}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
+        >
+          Готово
+        </button>
+      </div>
     </div>
   );
 }
