@@ -6,27 +6,16 @@ export default function WelcomePage() {
 
   // Стили
   const containerStyle = {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'flex-start' as const,
-    minHeight: '100vh',
     backgroundColor: 'white',
-    padding: '40px 24px', // Единые отступы по бокам
+    padding: '40px 24px 24px 24px',
     fontFamily: "'Montserrat', sans-serif",
     color: '#1f2937'
-  };
-
-  const contentWrapperStyle = {
-    flexGrow: 1, // Занимает все доступное пространство, отодвигая кнопку вниз
-    display: 'flex',
-    flexDirection: 'column' as const,
-    justifyContent: 'center' // Центрирует контент по вертикали
   };
 
   const avatarGroupStyle = {
     display: 'flex',
     alignItems: 'center',
-    marginBottom: '32px', // Немного увеличили отступ
+    marginBottom: '24px',
   };
 
   const avatarStyle = {
@@ -38,12 +27,11 @@ export default function WelcomePage() {
     objectFit: 'cover' as const,
     backgroundSize: 'cover',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    backgroundPosition: 'center', // 2. Центрирует изображение внутри круга
+    backgroundPosition: 'center',
   };
-  
-  // 1. Уменьшаем наложение, чтобы увеличить расстояние
+
   const avatarLeftStyle = { ...avatarStyle, zIndex: 3, position: 'relative' as const };
-  const avatarCenterStyle = { ...avatarStyle, zIndex: 2, marginLeft: '-15px' }; 
+  const avatarCenterStyle = { ...avatarStyle, zIndex: 2, marginLeft: '-15px' };
   const avatarRightStyle = { ...avatarStyle, zIndex: 1, marginLeft: '-15px' };
 
   const titleStyle = {
@@ -71,12 +59,6 @@ export default function WelcomePage() {
     fontSize: '16px',
     marginBottom: '8px',
   };
-  
-  // 3. Стили для кнопки и ее обертки, чтобы поднять ее выше
-  const buttonWrapperStyle = {
-      width: '100%',
-      paddingTop: '24px',
-  };
 
   const buttonStyle = {
     width: '100%',
@@ -90,41 +72,39 @@ export default function WelcomePage() {
     fontWeight: '600',
     fontFamily: "'Montserrat', sans-serif",
     transition: 'background-color 0.2s ease',
+    // Вот главный измененный отступ, который поднимет кнопку
+    marginTop: '48px', 
   };
 
   return (
     <div style={containerStyle}>
-        <div style={contentWrapperStyle}>
-            <div style={avatarGroupStyle}>
-              <div style={{...avatarLeftStyle, backgroundImage: 'url(/img/avatar1.png)'}}></div>
-              <div style={{...avatarCenterStyle, backgroundImage: 'url(/img/avatar2.png)'}}></div>
-              <div style={{...avatarRightStyle, backgroundImage: 'url(/img/avatar3.png)'}}></div>
-            </div>
-
-            <h1 style={titleStyle}>Определите архетип вашего бренда</h1>
-            <p style={textStyle}>Привет! Я — Алина, автор этого теста.</p>
-            <p style={textStyle}>
-              Он основан на системе 12 архетипов Кэрол Пирсон и поможет вам лучше понять ДНК вашего бренда.
-            </p>
-
-            <ul style={listStyle}>
-              <li style={listItemStyle}>✅ <b>Результат:</b> вы узнаете свой основной и дополнительный архетипы.</li>
-              <li style={listItemStyle}>✅ <b>Практика:</b> получите гайд с объяснением, как использовать эти знания.</li>
-            </ul>
-
-            <p style={textStyle}>
-              ⏱️ Тест состоит из 14 вопросов и займёт <b>не больше 5-7 минут</b>.
-            </p>
-        </div>
-
-      <div style={buttonWrapperStyle}>
-          <button
-            style={buttonStyle}
-            onClick={() => navigate('/test')}
-          >
-            Начать тест
-          </button>
+      <div style={avatarGroupStyle}>
+        <div style={{...avatarLeftStyle, backgroundImage: 'url(/img/avatar1.png)'}}></div>
+        <div style={{...avatarCenterStyle, backgroundImage: 'url(/img/avatar2.png)'}}></div>
+        <div style={{...avatarRightStyle, backgroundImage: 'url(/img/avatar3.png)'}}></div>
       </div>
+
+      <h1 style={titleStyle}>Определите архетип вашего бренда</h1>
+      <p style={textStyle}>Привет! Я — Алина, автор этого теста.</p>
+      <p style={textStyle}>
+        Он основан на системе 12 архетипов Кэрол Пирсон и поможет вам лучше понять ДНК вашего бренда.
+      </p>
+
+      <ul style={listStyle}>
+        <li style={listItemStyle}>✅ <b>Результат:</b> вы узнаете свой основной и дополнительный архетипы.</li>
+        <li style={listItemStyle}>✅ <b>Практика:</b> получите гайд с объяснением, как использовать эти знания.</li>
+      </ul>
+
+      <p style={textStyle}>
+        ⏱️ Тест состоит из 14 вопросов и займёт <b>не больше 5-7 минут</b>.
+      </p>
+      
+      <button
+        style={buttonStyle}
+        onClick={() => navigate('/test')}
+      >
+        Начать тест
+      </button>
     </div>
   );
 }
