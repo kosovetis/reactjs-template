@@ -131,11 +131,11 @@ export default function Home() {
     padding: "8px",
     borderRadius: "6px",
     transition: "background-color 0.2s ease",
-    color: "#1f2937", // Явно задаем темный цвет текста
+    color: "#1f2937", 
   };
 
   return (
-    <div style={{ backgroundColor: 'white', minHeight: '100vh' }}> {/* Задаем белый фон для всего экрана */}
+    <div style={{ backgroundColor: 'white', minHeight: '100vh' }}>
       <div style={{
         position: "fixed", top: 0, left: 0, right: 0, height: "4px", backgroundColor: "#e5e7eb", zIndex: 1000
       }}>
@@ -144,7 +144,10 @@ export default function Home() {
         }}></div>
       </div>
 
-      <div className="p-6 flex flex-col space-y-6 max-w-2xl mx-auto" style={{ paddingBottom: "32px", paddingTop: "20px" }}>
+      {/* ↓↓↓ ГЛАВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ↓↓↓
+        Убираем className и прописываем стили с отступами напрямую
+      */}
+      <div style={{ padding: "24px", maxWidth: "700px", margin: "0 auto", paddingBottom: "32px", paddingTop: "20px" }}>
         <div>
           <h1 style={questionStyle}>
             {questions[blockIndex]}
@@ -160,7 +163,6 @@ export default function Home() {
               key={id}
               style={{
                 ...labelStyle,
-                // Явный белый фон, который меняется на голубой при выборе
                 backgroundColor: selected.includes(id) ? "#f0f9ff" : "#ffffff"
               }}
             >
