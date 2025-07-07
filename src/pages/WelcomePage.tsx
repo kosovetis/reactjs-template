@@ -18,17 +18,29 @@ export default function WelcomePage() {
     color: '#1f2937'
   };
 
-  const avatarStyle = {
-    width: '96px',
-    height: '96px',
-    borderRadius: '50%',
-    backgroundColor: '#e5e7eb', // Заглушка для аватара
+  // ↓↓↓ НОВЫЕ СТИЛИ ДЛЯ ГРУППЫ АВАТАРОК ↓↓↓
+  const avatarGroupStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: '24px',
-    objectFit: 'cover' as const,
-    // Если у вас есть URL аватара, раскомментируйте и вставьте его
-    // backgroundImage: 'url(URL_ВАШЕЙ_АВАТАРКИ)',
-    // backgroundSize: 'cover',
   };
+
+  const avatarStyle = {
+    width: '80px', // Немного уменьшили для группы
+    height: '80px',
+    borderRadius: '50%',
+    backgroundColor: '#e5e7eb',
+    border: '3px solid white',
+    objectFit: 'cover' as const,
+    backgroundSize: 'cover',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  };
+  
+  // Стили для сдвига аватарок, чтобы они накладывались друг на друга
+  const avatarLeftStyle = { ...avatarStyle, zIndex: 3, position: 'relative' as const };
+  const avatarCenterStyle = { ...avatarStyle, zIndex: 2, marginLeft: '-20px' };
+  const avatarRightStyle = { ...avatarStyle, zIndex: 1, marginLeft: '-20px' };
 
   const titleStyle = {
     fontSize: '22px',
@@ -74,7 +86,14 @@ export default function WelcomePage() {
 
   return (
     <div style={containerStyle}>
-      <div style={avatarStyle}></div>
+      {/* ↓↓↓ ОБНОВЛЕННЫЙ БЛОК ДЛЯ АВАТАРОК ↓↓↓ */}
+      <div style={avatarGroupStyle}>
+        {/* Пути к изображениям теперь ведут в папку /img/ */}
+        <div style={{...avatarLeftStyle, backgroundImage: 'url(/img/avatar1.png)'}}></div>
+        <div style={{...avatarCenterStyle, backgroundImage: 'url(/img/avatar2.png)'}}></div>
+        <div style={{...avatarRightStyle, backgroundImage: 'url(/img/avatar3.png)'}}></div>
+      </div>
+
       <h1 style={titleStyle}>Определите архетип вашего бренда</h1>
       <p style={textStyle}>Привет! Я — Алина, автор этого теста.</p>
       <p style={textStyle}>
