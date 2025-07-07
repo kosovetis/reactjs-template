@@ -25,7 +25,7 @@ function Row({ item, index }: { item: Item; index: number }) {
   const rowStyle = {
     WebkitUserSelect: "none" as const,
     WebkitTouchCallout: "none" as const,
-    touchAction: "manipulation" as const, // Изменено для лучшего скролла
+    touchAction: "manipulation" as const,
     transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
     transition,
     padding: "16px",
@@ -38,7 +38,8 @@ function Row({ item, index }: { item: Item; index: number }) {
     fontFamily: "'Montserrat', sans-serif",
     fontSize: "16px",
     lineHeight: "1.5",
-    position: "relative" as const
+    position: "relative" as const,
+    color: '#1f2937', // Явно задаем темный цвет текста
   };
 
   return (
@@ -48,7 +49,7 @@ function Row({ item, index }: { item: Item; index: number }) {
       {...listeners}
       style={rowStyle}
     >
-      <div 
+      <div
         style={{
           position: "absolute",
           left: "8px",
@@ -95,7 +96,6 @@ export default function Rank({
 }) {
   const [items, setItems] = useState<Item[]>(list.map(id => ({ id, text: idToText(id) })));
 
-  // Прокрутка к началу страницы при загрузке компонента
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -103,7 +103,7 @@ export default function Rank({
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor, {
-      activationConstraint: { delay: 150, tolerance: 10 }, // Увеличена толерантность для лучшего скролла
+      activationConstraint: { delay: 150, tolerance: 10 },
     })
   );
 
@@ -116,120 +116,40 @@ export default function Rank({
     }
   };
 
-  // Прогресс-бар для страниц ранжирования
   const progress = ((blockIndex + 1) / totalBlocks) * 100;
-  const progressBarStyle = {
-    position: "fixed" as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "4px",
-    backgroundColor: "#e5e7eb",
-    zIndex: 1000
-  };
 
-  const progressFillStyle = {
-    height: "100%",
-    backgroundColor: "#3b82f6",
-    width: `${progress}%`,
-    transition: "width 0.3s ease"
-  };
-
-  const containerStyle = {
-    padding: "24px",
-    maxWidth: "700px",
-    margin: "0 auto",
-    fontFamily: "'Montserrat', sans-serif",
-    paddingBottom: "32px",
-    paddingTop: "20px", // Добавляем отступ сверху для прогресс-бара
-    minHeight: "100vh", // Обеспечиваем возможность скролла
-    overflowY: "auto" as const // Явно разрешаем скролл
-  };
-
-  const titleStyle = {
-    fontSize: "20px",
-    marginBottom: "12px",
-    fontWeight: "600",
-    textAlign: "left" as const,
-    lineHeight: "1.4",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "#1f2937"
-  };
-
-  const instructionStyle = {
-    fontSize: "14px",
-    fontWeight: "400",
-    textAlign: "center" as const,
-    marginBottom: "24px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "#6b7280",
-    fontStyle: "italic",
-    backgroundColor: "#f9fafb",
-    padding: "8px 12px",
-    borderRadius: "6px",
-    border: "1px solid #e5e7eb"
-  };
-
-  const buttonStyle = {
-    marginTop: "24px",
-    padding: "12px 32px",
-    background: "#3b82f6",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "16px",
-    fontWeight: "500",
-    cursor: "pointer",
-    fontFamily: "'Montserrat', sans-serif",
-    transition: "background-color 0.2s ease",
-    display: "inline-block",
-    marginRight: "12px"
-  };
-
-  const backButtonStyle = {
-    padding: "12px 32px", // Изменено с "12px 20px" на "12px 32px" для выравнивания высоты с кнопкой "Готово"
-    background: "transparent",
-    color: "#6b7280",
-    borderRadius: "8px",
-    cursor: "pointer",
-    border: "1px solid #d1d5db",
-    fontSize: "16px",
-    fontWeight: "400",
-    fontFamily: "'Montserrat', sans-serif",
-    transition: "all 0.2s ease",
-    display: "inline-block",
-    marginRight: "12px"
-  };
-
-  const listContainerStyle = {
-    touchAction: "pan-y" as const, // Разрешаем вертикальный скролл
-    overflowY: "visible" as const
-  };
-
-  // Разделяем заголовок и инструкцию, убираем скобки
   const titleParts = title.split('(');
   const mainTitle = titleParts[0].trim();
   const instruction = titleParts[1] ? titleParts[1].replace(/[()]/g, '').replace(/нажмите на него/g, 'зажмите его') : '';
 
   return (
-    <div style={{ minHeight: "100vh", overflowY: "auto" }}>
-      {/* Прогресс-бар */}
-      <div style={progressBarStyle}>
-        <div style={progressFillStyle}></div>
+    <div style={{ backgroundColor: 'white', minHeight: "100vh", overflowY: "auto" }}> {/* Задаем белый фон */}
+      <div style={{
+        position: "fixed", top: 0, left: 0, right: 0, height: "4px", backgroundColor: "#e5e7eb", zIndex: 1000
+      }}>
+        <div style={{
+          height: "100%", backgroundColor: "#3b82f6", width: `${progress}%`, transition: "width 0.3s ease"
+        }}></div>
       </div>
 
-      <div style={containerStyle}>
-        <h1 style={titleStyle}>
+      <div style={{
+        padding: "24px", maxWidth: "700px", margin: "0 auto", fontFamily: "'Montserrat', sans-serif", paddingBottom: "32px", paddingTop: "20px",
+      }}>
+        <h1 style={{
+          fontSize: "20px", marginBottom: "12px", fontWeight: "600", textAlign: "left", lineHeight: "1.4", fontFamily: "'Montserrat', sans-serif", color: "#1f2937"
+        }}>
           {mainTitle}
         </h1>
         
         {instruction && (
-          <div style={instructionStyle}>
+          <div style={{
+            fontSize: "14px", fontWeight: "400", textAlign: "center", marginBottom: "24px", fontFamily: "'Montserrat', sans-serif", color: "#6b7280", fontStyle: "italic", backgroundColor: "#f9fafb", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb"
+          }}>
             {instruction}
           </div>
         )}
 
-        <div style={listContainerStyle}>
+        <div style={{ touchAction: "pan-y", overflowY: "visible" }}>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
               {items.map((item, index) => <Row key={item.id} item={item} index={index} />)}
@@ -238,27 +158,16 @@ export default function Rank({
         </div>
 
         <div style={{ textAlign: "center" }}>
-          {/* Кнопки в одной строке */}
           <button
             onClick={onBack}
-            style={backButtonStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#f3f4f6";
-              e.currentTarget.style.color = "#374151";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#6b7280";
-            }}
+            style={{ padding: "12px 32px", background: "transparent", color: "#6b7280", borderRadius: "8px", cursor: "pointer", border: "1px solid #d1d5db", fontSize: "16px", fontWeight: "400", fontFamily: "'Montserrat', sans-serif", transition: "all 0.2s ease", display: "inline-block", marginRight: "12px" }}
           >
             ← Назад
           </button>
 
           <button
-            style={buttonStyle}
+            style={{ marginTop: "24px", padding: "12px 32px", background: "#3b82f6", color: "white", border: "none", borderRadius: "8px", fontSize: "16px", fontWeight: "500", cursor: "pointer", fontFamily: "'Montserrat', sans-serif", transition: "background-color 0.2s ease", display: "inline-block", marginRight: "12px" }}
             onClick={() => onDone(items.map(i => i.id))}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
           >
             Готово
           </button>
