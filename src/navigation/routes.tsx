@@ -1,13 +1,11 @@
-// src/navigation/routes.tsx
 import type { ComponentType, JSX } from 'react';
 
+import WelcomePage from '@/pages/WelcomePage'; // Импортируем нашу новую страницу
 import Home from '@/Home'; // Это ваш тест
 import { InitDataPage } from '@/pages/InitDataPage';
 import { LaunchParamsPage } from '@/pages/LaunchParamsPage';
 import { ThemeParamsPage } from '@/pages/ThemeParamsPage';
 import { TONConnectPage } from '@/pages/TONConnectPage/TONConnectPage';
-// WelcomePage больше не нужна, можно удалить эту строку
-// import WelcomePage from '@/pages/WelcomePage'; 
 
 interface Route {
   path: string;
@@ -17,11 +15,12 @@ interface Route {
 }
 
 export const routes: Route[] = [
-  // --- ГЛАВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ---
-  // Теперь главный путь '/' сразу ведет на компонент с тестом
-  { path: '/', Component: Home }, 
-
-  // Остальные страницы остаются для служебных целей, как и были
+  // Теперь главная страница - это WelcomePage
+  { path: '/', Component: WelcomePage },
+  // А тест переезжает на /test
+  { path: '/test', Component: Home }, 
+  
+  // Остальные страницы остаются как были
   { path: '/init-data', Component: InitDataPage, title: 'Init Data' },
   { path: '/theme-params', Component: ThemeParamsPage, title: 'Theme Params' },
   { path: '/launch-params', Component: LaunchParamsPage, title: 'Launch Params' },
