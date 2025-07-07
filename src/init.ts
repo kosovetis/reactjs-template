@@ -65,7 +65,7 @@ export async function init(options: {
   
   if (miniApp.mountSync.isAvailable()) {
     miniApp.mountSync();
-    bindThemeParamsCssVars();
+    // bindThemeParamsCssVars(); // <-- Эта строка закомментирована
   }
 
   mountViewport.isAvailable() && mountViewport().then(() => {
