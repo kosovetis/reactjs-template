@@ -1,6 +1,7 @@
 import type { ComponentType, JSX } from 'react';
 
-import Home from '@/Home';
+import WelcomePage from '@/pages/WelcomePage'; // Импортируем нашу новую страницу
+import Home from '@/Home'; // Это ваш тест
 import { InitDataPage } from '@/pages/InitDataPage';
 import { LaunchParamsPage } from '@/pages/LaunchParamsPage';
 import { ThemeParamsPage } from '@/pages/ThemeParamsPage';
@@ -14,7 +15,12 @@ interface Route {
 }
 
 export const routes: Route[] = [
-  { path: '/', Component: Home },
+  // Теперь главная страница - это WelcomePage
+  { path: '/', Component: WelcomePage },
+  // А тест переезжает на /test
+  { path: '/test', Component: Home }, 
+  
+  // Остальные страницы остаются как были
   { path: '/init-data', Component: InitDataPage, title: 'Init Data' },
   { path: '/theme-params', Component: ThemeParamsPage, title: 'Theme Params' },
   { path: '/launch-params', Component: LaunchParamsPage, title: 'Launch Params' },
