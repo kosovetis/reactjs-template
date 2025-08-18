@@ -82,7 +82,7 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
     } catch (error) {
       console.error('Ошибка открытия ссылки:', error);
       // Fallback - попытка открыть обычным способом
-      window.open('https://t.me/a_kosovetis/70', '_blank');
+      window.location.href = 'tg://resolve?domain=a_kosovetis&post=70', '_blank';
     }
   };
 
