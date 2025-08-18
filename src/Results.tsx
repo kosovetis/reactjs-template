@@ -1,4 +1,5 @@
 import { useMemo, useEffect, CSSProperties } from "react";
+import { trackEvent, AnalyticsEvents } from "./utils/analytics.ts"; // ← Добавили импорт
 
 interface ResultsProps {
   results?: { blockIndex: number; selected: string[]; ranked: string[] }[];
@@ -31,11 +32,6 @@ const archetypeDescriptions: Record<string, ArchetypeData> = {
 };
 
 function Results({ results, onRestart, idToArch }: ResultsProps) {
-  // Прокрутка к началу страницы при загрузке компонента
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   const archetypeScores = useMemo(() => {
     if (!results) return {};
     const scores: Record<string, number> = {};
@@ -54,8 +50,33 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
   const sortedArchetypes = Object.entries(archetypeScores).sort(([, a], [, b]) => (b as number) - (a as number));
   const [first, second] = sortedArchetypes;
 
+  // ← Отслеживание завершения теста
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    
+    if (first && second) {
+      trackEvent(AnalyticsEvents.TEST_COMPLETED, {
+        primary_archetype: first[0],
+        primary_score: first[1],
+        secondary_archetype: second[0],
+        secondary_score: second[1],
+        total_archetypes: sortedArchetypes.length
+      });
+    }
+  }, [first, second, sortedArchetypes.length]);
+
   if (!results || !first) return <div>Ошибка: не удалось определить архетип</div>;
 
+  // ← Обработчик клика на "Получить гайд"
+  const handleGuideClick = () => {
+    trackEvent(AnalyticsEvents.GUIDE_CLICKED, {
+      primary_archetype: first[0],
+      secondary_archetype: second ? second[0] : null,
+      primary_score: first[1]
+    });
+  };
+
+  // Стили (без изменений)
   const containerStyle: CSSProperties = {
     padding: "24px",
     maxWidth: "800px",
@@ -300,6 +321,7 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
           target="_blank"
           rel="noopener noreferrer"
           style={ctaButtonStyle}
+          onClick={handleGuideClick} // ← Добавили отслеживание клика
           onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
             const target = e.currentTarget as HTMLAnchorElement;
             target.style.backgroundColor = "#f3f4f6";
@@ -328,29 +350,4 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
   );
 }
 
-// Демонстрационные данные для примера
-const mockResults: { blockIndex: number; selected: string[]; ranked: string[] }[] = [
-  { blockIndex: 0, selected: ["q1", "q2"], ranked: ["q1", "q2", "q3", "q4", "q5"] },
-  { blockIndex: 1, selected: ["q6", "q7"], ranked: ["q6", "q7", "q8", "q9", "q10"] },
-  { blockIndex: 2, selected: ["q11", "q12"], ranked: ["q11", "q12", "q13", "q14", "q15"] }
-];
-
-const mockIdToArch: Record<string, string> = {
-  q1: "magician", q2: "hero", q3: "creator", q4: "sage", q5: "explorer",
-  q6: "magician", q7: "creator", q8: "hero", q9: "rebel", q10: "jester",
-  q11: "creator", q12: "magician", q13: "hero", q14: "sage", q15: "innocent"
-};
-
-export default function App() {
-  const handleRestart = () => {
-    alert("Перезапуск теста!");
-  };
-
-  return (
-    <Results 
-      results={mockResults} 
-      onRestart={handleRestart} 
-      idToArch={mockIdToArch} 
-    />
-  );
-}
+export default Results;
