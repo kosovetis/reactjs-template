@@ -1,5 +1,5 @@
 import { useMemo, useEffect, CSSProperties } from "react";
-import { openTelegramLink } from '@telegram-apps/sdk-react';
+// Убираем импорты openLink/openTelegramLink, так как они больше не нужны
 import { trackEvent, AnalyticsEvents } from "./utils/analytics.ts";
 
 interface ResultsProps {
@@ -51,7 +51,6 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
   const sortedArchetypes = Object.entries(archetypeScores).sort(([, a], [, b]) => (b as number) - (a as number));
   const [first, second] = sortedArchetypes;
 
-  // Отслеживание завершения теста
   useEffect(() => {
     window.scrollTo(0, 0);
     
@@ -67,18 +66,6 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
   }, [first, second, sortedArchetypes.length]);
 
   if (!results || !first) return <div>Ошибка: не удалось определить архетип</div>;
-
-  // Обработчик клика на "Получить гайд"
-  const handleGuideClick = () => {
-    trackEvent(AnalyticsEvents.GUIDE_CLICKED, {
-      primary_archetype: first[0],
-      secondary_archetype: second ? second[0] : null,
-      primary_score: first[1]
-    });
-    
-    // Используем openTelegramLink для открытия ссылки на пост
-    openTelegramLink('https://t.me/a_kosovetis/70');
-  };
 
   // Стили
   const containerStyle: CSSProperties = {
@@ -210,7 +197,8 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
     transition: "all 0.2s ease",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
-    cursor: "pointer"
+    cursor: "pointer",
+    textDecoration: "none" // Добавляем это, чтобы убрать подчеркивание у ссылки
   };
 
   const restartButtonStyle: CSSProperties = {
@@ -320,18 +308,27 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
             А еще увидите на реальных кейсах, как архетипы применяются в маркетинге.
           </p>
         </div>
-        <button
-          onClick={handleGuideClick}
+        
+        {/* ↓↓↓ ОСНОВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ↓↓↓ */}
+        <a
+          href="https://t.me/a_kosovetis/70"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackEvent(AnalyticsEvents.GUIDE_CLICKED, {
+            primary_archetype: first[0],
+            secondary_archetype: second ? second[0] : null,
+            primary_score: first[1]
+          })}
           style={ctaButtonStyle}
-          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-            const target = e.currentTarget as HTMLButtonElement;
+          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+            const target = e.currentTarget;
             target.style.backgroundColor = "#f3f4f6";
             target.style.color = "#1f2937";
             target.style.transform = "translateY(-2px)";
             target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
           }}
-          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-            const target = e.currentTarget as HTMLButtonElement;
+          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+            const target = e.currentTarget;
             target.style.backgroundColor = "white";
             target.style.color = "#3b82f6";
             target.style.transform = "translateY(0)";
@@ -339,7 +336,7 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
           }}
         >
           Получить Гайд
-        </button>
+        </a>
       </div>
 
       <div style={{ textAlign: "center" }}>
