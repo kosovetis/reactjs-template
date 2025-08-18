@@ -317,7 +317,7 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
           </p>
         </div>
         <a
-          href="https://archetypes-guide.vercel.app/"
+          href="https://t.me/a_kosovetis/70"
           target="_blank"
           rel="noopener noreferrer"
           style={ctaButtonStyle}
