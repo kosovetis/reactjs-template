@@ -1,5 +1,6 @@
 import { useMemo, useEffect, CSSProperties } from "react";
-import { trackEvent, AnalyticsEvents } from "./utils/analytics.ts"; // ← Добавили импорт
+import { openTelegramLink } from '@telegram-apps/sdk-react';
+import { trackEvent, AnalyticsEvents } from "./utils/analytics.ts";
 
 interface ResultsProps {
   results?: { blockIndex: number; selected: string[]; ranked: string[] }[];
@@ -50,7 +51,7 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
   const sortedArchetypes = Object.entries(archetypeScores).sort(([, a], [, b]) => (b as number) - (a as number));
   const [first, second] = sortedArchetypes;
 
-  // ← Отслеживание завершения теста
+  // Отслеживание завершения теста
   useEffect(() => {
     window.scrollTo(0, 0);
     
@@ -67,16 +68,25 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
 
   if (!results || !first) return <div>Ошибка: не удалось определить архетип</div>;
 
-  // ← Обработчик клика на "Получить гайд"
+  // Обработчик клика на "Получить гайд"
   const handleGuideClick = () => {
     trackEvent(AnalyticsEvents.GUIDE_CLICKED, {
       primary_archetype: first[0],
       secondary_archetype: second ? second[0] : null,
       primary_score: first[1]
     });
+    
+    // Открываем ссылку на Telegram пост
+    try {
+      openTelegramLink('https://t.me/a_kosovetis/70');
+    } catch (error) {
+      console.error('Ошибка открытия ссылки:', error);
+      // Fallback - попытка открыть обычным способом
+      window.open('https://t.me/a_kosovetis/70', '_blank');
+    }
   };
 
-  // Стили (без изменений)
+  // Стили
   const containerStyle: CSSProperties = {
     padding: "24px",
     maxWidth: "800px",
@@ -201,12 +211,12 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
     borderRadius: "8px",
     fontSize: "16px",
     fontWeight: "700",
-    textDecoration: "none",
+    border: "2px solid white",
     fontFamily: "'Montserrat', sans-serif",
     transition: "all 0.2s ease",
-    border: "2px solid white",
     textTransform: "uppercase",
-    letterSpacing: "0.5px"
+    letterSpacing: "0.5px",
+    cursor: "pointer"
   };
 
   const restartButtonStyle: CSSProperties = {
@@ -316,14 +326,26 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
             А еще увидите на реальных кейсах, как архетипы применяются в маркетинге.
           </p>
         </div>
-        <a
-          href="https://t.me/a_kosovetis/70"
-  target="_blank"
-  rel="noopener noreferrer"
-  style={ctaButtonStyle}
->
-  Получить Гайд
-</a>
+        <button
+          onClick={handleGuideClick}
+          style={ctaButtonStyle}
+          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+            const target = e.currentTarget as HTMLButtonElement;
+            target.style.backgroundColor = "#f3f4f6";
+            target.style.color = "#1f2937";
+            target.style.transform = "translateY(-2px)";
+            target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+          }}
+          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+            const target = e.currentTarget as HTMLButtonElement;
+            target.style.backgroundColor = "white";
+            target.style.color = "#3b82f6";
+            target.style.transform = "translateY(0)";
+            target.style.boxShadow = "none";
+          }}
+        >
+          Получить Гайд
+        </button>
       </div>
 
       <div style={{ textAlign: "center" }}>
