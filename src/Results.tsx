@@ -1,6 +1,21 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, CSSProperties } from "react";
 
-const archetypeDescriptions = {
+interface ResultsProps {
+  results?: { blockIndex: number; selected: string[]; ranked: string[] }[];
+  onRestart: () => void;
+  idToArch: Record<string, string>;
+}
+
+interface ArchetypeData {
+  name: string;
+  emoji: string;
+  color: string;
+  description: string;
+  traits: string[];
+  examples: string[];
+}
+
+const archetypeDescriptions: Record<string, ArchetypeData> = {
   caregiver: { name: "ЗАБОТЛИВЫЙ", emoji: "🤲", color: "#10B981", description: "Защищает и поддерживает — словно надёжный друг, который всегда подставит плечо, делая мир безопаснее.", traits: ["Забота", "Сопереживание", "Желание помочь", "Альтруизм"], examples: ["Johnson & Johnson", "Nivea", "Pampers"] },
   jester: { name: "ШУТ", emoji: "🎭", color: "#F59E0B", description: "Снимает напряжение, прогоняет скуку и заряжает юмором, помогая жить здесь и сейчас и наслаждаться моментом.", traits: ["Юмор", "Веселье", "Оптимизм", "Легкость"], examples: ["Burger King", "Old Spice", "Skittles"] },
   magician: { name: "МАГ", emoji: "🪄", color: "#8B5CF6", description: "Воплощает невозможное, расширяя границы реальности и вдохновляя людей.", traits: ["Инновации", "Визионерство", "Трансформация", "Возможности"], examples: ["Apple", "Disney", "Dyson"] },
@@ -15,7 +30,7 @@ const archetypeDescriptions = {
   lover: { name: "ЛЮБОВНИК", emoji: "❤️", color: "#BE185D", description: "Очаровывает эстетикой и чувственностью, дарит насыщенные эмоции и удовольствие, создавая атмосферу глубокой связи.", traits: ["Чувственность", "Наслаждение", "Эстетика", "Удовольствие"], examples: ["Victoria's Secret", "Godiva"] }
 };
 
-function Results({ results, onRestart, idToArch }) {
+function Results({ results, onRestart, idToArch }: ResultsProps) {
   // Прокрутка к началу страницы при загрузке компонента
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -23,7 +38,7 @@ function Results({ results, onRestart, idToArch }) {
 
   const archetypeScores = useMemo(() => {
     if (!results) return {};
-    const scores = {};
+    const scores: Record<string, number> = {};
     results.forEach(({ ranked }) => {
       ranked.forEach((id, index) => {
         const archetype = idToArch[id];
@@ -36,12 +51,12 @@ function Results({ results, onRestart, idToArch }) {
     return scores;
   }, [results, idToArch]);
 
-  const sortedArchetypes = Object.entries(archetypeScores).sort(([, a], [, b]) => b - a);
+  const sortedArchetypes = Object.entries(archetypeScores).sort(([, a], [, b]) => (b as number) - (a as number));
   const [first, second] = sortedArchetypes;
 
   if (!results || !first) return <div>Ошибка: не удалось определить архетип</div>;
 
-  const containerStyle = {
+  const containerStyle: CSSProperties = {
     padding: "24px",
     maxWidth: "800px",
     margin: "0 auto",
@@ -49,7 +64,7 @@ function Results({ results, onRestart, idToArch }) {
     paddingBottom: "32px"
   };
 
-  const mainTitleStyle = {
+  const mainTitleStyle: CSSProperties = {
     fontSize: "28px",
     fontWeight: "700",
     textAlign: "center",
@@ -58,7 +73,7 @@ function Results({ results, onRestart, idToArch }) {
     color: "#1f2937"
   };
 
-  const archetypeContainerStyle = {
+  const archetypeContainerStyle: CSSProperties = {
     marginBottom: "48px",
     textAlign: "center",
     padding: "24px",
@@ -67,20 +82,20 @@ function Results({ results, onRestart, idToArch }) {
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
   };
 
-  const emojiStyle = {
+  const emojiStyle: CSSProperties = {
     fontSize: "48px",
     marginBottom: "16px",
     display: "block"
   };
 
-  const archetypeNameStyle = {
+  const archetypeNameStyle: CSSProperties = {
     fontSize: "24px",
     fontWeight: "700",
     marginBottom: "16px",
     fontFamily: "'Montserrat', sans-serif"
   };
 
-  const descriptionStyle = {
+  const descriptionStyle: CSSProperties = {
     fontSize: "18px",
     lineHeight: "1.6",
     maxWidth: "600px",
@@ -89,7 +104,7 @@ function Results({ results, onRestart, idToArch }) {
     color: "#374151"
   };
 
-  const sectionTitleStyle = {
+  const sectionTitleStyle: CSSProperties = {
     fontSize: "18px",
     fontWeight: "600",
     marginBottom: "12px",
@@ -97,7 +112,7 @@ function Results({ results, onRestart, idToArch }) {
     color: "#1f2937"
   };
 
-  const traitsListStyle = {
+  const traitsListStyle: CSSProperties = {
     listStyle: "none",
     padding: 0,
     margin: "0 0 24px 0",
@@ -107,7 +122,7 @@ function Results({ results, onRestart, idToArch }) {
     gap: "8px"
   };
 
-  const traitItemStyle = {
+  const traitItemStyle: CSSProperties = {
     background: "#e5e7eb",
     padding: "6px 12px",
     borderRadius: "20px",
@@ -116,13 +131,13 @@ function Results({ results, onRestart, idToArch }) {
     color: "#374151"
   };
 
-  const examplesStyle = {
+  const examplesStyle: CSSProperties = {
     fontSize: "16px",
     fontFamily: "'Montserrat', sans-serif",
     color: "#6b7280"
   };
 
-  const ctaBlockStyle = {
+  const ctaBlockStyle: CSSProperties = {
     padding: "32px",
     backgroundColor: "#3b82f6",
     borderRadius: "12px",
@@ -132,14 +147,14 @@ function Results({ results, onRestart, idToArch }) {
     position: "relative"
   };
 
-  const ctaEmojiStyle = {
+  const ctaEmojiStyle: CSSProperties = {
     fontSize: "48px",
     marginBottom: "20px",
     display: "block",
     textAlign: "center"
   };
 
-  const ctaHeadlineStyle = {
+  const ctaHeadlineStyle: CSSProperties = {
     fontSize: "22px",
     fontWeight: "700",
     lineHeight: "1.3",
@@ -148,7 +163,7 @@ function Results({ results, onRestart, idToArch }) {
     color: "white"
   };
 
-  const ctaTextStyle = {
+  const ctaTextStyle: CSSProperties = {
     fontSize: "16px",
     lineHeight: "1.5",
     marginBottom: "24px",
@@ -157,7 +172,7 @@ function Results({ results, onRestart, idToArch }) {
     opacity: 0.95
   };
 
-  const ctaButtonStyle = {
+  const ctaButtonStyle: CSSProperties = {
     display: "inline-block",
     backgroundColor: "white",
     color: "#3b82f6",
@@ -173,7 +188,7 @@ function Results({ results, onRestart, idToArch }) {
     letterSpacing: "0.5px"
   };
 
-  const restartButtonStyle = {
+  const restartButtonStyle: CSSProperties = {
     background: "none",
     border: "none",
     color: "#3b82f6",
@@ -191,7 +206,7 @@ function Results({ results, onRestart, idToArch }) {
       <h1 style={mainTitleStyle}>Ваши архетипы:</h1>
 
       {[first, second].map(([arch], index) => {
-        const data = archetypeDescriptions[arch];
+        const data = archetypeDescriptions[arch as keyof typeof archetypeDescriptions];
         if (!data) return null;
 
         return (
@@ -221,7 +236,7 @@ function Results({ results, onRestart, idToArch }) {
               <div style={{
                 marginTop: "32px",
                 textAlign: "center"
-              }}>
+              } as CSSProperties}>
                 <div style={{
                   display: "inline-block",
                   color: "#9ca3af",
@@ -233,7 +248,7 @@ function Results({ results, onRestart, idToArch }) {
                   borderRadius: "12px",
                   padding: "6px 12px",
                   marginBottom: "8px"
-                }}>
+                } as CSSProperties}>
                   SCROLL
                 </div>
                 <div style={{ 
@@ -242,7 +257,7 @@ function Results({ results, onRestart, idToArch }) {
                   opacity: 0.7,
                   color: "#9ca3af",
                   animation: "bounce 2s infinite"
-                }}>
+                } as CSSProperties}>
                   <style>{`
                     @keyframes bounce {
                       0%, 20%, 50%, 80%, 100% {
@@ -269,7 +284,7 @@ function Results({ results, onRestart, idToArch }) {
         <h3 style={ctaHeadlineStyle}>
           Как использовать эти результаты?
         </h3>
-        <div style={{ ...ctaTextStyle, textAlign: "center" }}>
+        <div style={{ ...ctaTextStyle, textAlign: "center" as const }}>
           <p style={{ marginBottom: "16px" }}>
             Архетип – это основа для всей коммуникации бренда.
           </p>
@@ -285,17 +300,19 @@ function Results({ results, onRestart, idToArch }) {
           target="_blank"
           rel="noopener noreferrer"
           style={ctaButtonStyle}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#f3f4f6";
-            e.currentTarget.style.color = "#1f2937";
-            e.currentTarget.style.transform = "translateY(-2px)";
-            e.currentTarget.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+            const target = e.currentTarget as HTMLAnchorElement;
+            target.style.backgroundColor = "#f3f4f6";
+            target.style.color = "#1f2937";
+            target.style.transform = "translateY(-2px)";
+            target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
           }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "white";
-            e.currentTarget.style.color = "#3b82f6";
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "none";
+          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+            const target = e.currentTarget as HTMLAnchorElement;
+            target.style.backgroundColor = "white";
+            target.style.color = "#3b82f6";
+            target.style.transform = "translateY(0)";
+            target.style.boxShadow = "none";
           }}
         >
           Получить Гайд
@@ -312,13 +329,13 @@ function Results({ results, onRestart, idToArch }) {
 }
 
 // Демонстрационные данные для примера
-const mockResults = [
+const mockResults: { blockIndex: number; selected: string[]; ranked: string[] }[] = [
   { blockIndex: 0, selected: ["q1", "q2"], ranked: ["q1", "q2", "q3", "q4", "q5"] },
   { blockIndex: 1, selected: ["q6", "q7"], ranked: ["q6", "q7", "q8", "q9", "q10"] },
   { blockIndex: 2, selected: ["q11", "q12"], ranked: ["q11", "q12", "q13", "q14", "q15"] }
 ];
 
-const mockIdToArch = {
+const mockIdToArch: Record<string, string> = {
   q1: "magician", q2: "hero", q3: "creator", q4: "sage", q5: "explorer",
   q6: "magician", q7: "creator", q8: "hero", q9: "rebel", q10: "jester",
   q11: "creator", q12: "magician", q13: "hero", q14: "sage", q15: "innocent"
