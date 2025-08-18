@@ -1,4 +1,3 @@
-// src/Results.tsx
 import { useMemo, useEffect } from "react";
 
 const archetypeDescriptions = {
@@ -16,13 +15,7 @@ const archetypeDescriptions = {
   lover: { name: "ЛЮБОВНИК", emoji: "❤️", color: "#BE185D", description: "Очаровывает эстетикой и чувственностью, дарит насыщенные эмоции и удовольствие, создавая атмосферу глубокой связи.", traits: ["Чувственность", "Наслаждение", "Эстетика", "Удовольствие"], examples: ["Victoria's Secret", "Godiva"] }
 };
 
-interface ResultsProps {
-  results?: { blockIndex: number; selected: string[]; ranked: string[] }[];
-  onRestart: () => void;
-  idToArch: Record<string, string>;
-}
-
-export default function Results({ results, onRestart, idToArch }: ResultsProps) {
+function Results({ results, onRestart, idToArch }) {
   // Прокрутка к началу страницы при загрузке компонента
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,7 +23,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
 
   const archetypeScores = useMemo(() => {
     if (!results) return {};
-    const scores: Record<string, number> = {};
+    const scores = {};
     results.forEach(({ ranked }) => {
       ranked.forEach((id, index) => {
         const archetype = idToArch[id];
@@ -59,7 +52,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
   const mainTitleStyle = {
     fontSize: "28px",
     fontWeight: "700",
-    textAlign: "center" as const,
+    textAlign: "center",
     marginBottom: "32px",
     fontFamily: "'Montserrat', sans-serif",
     color: "#1f2937"
@@ -67,7 +60,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
 
   const archetypeContainerStyle = {
     marginBottom: "48px",
-    textAlign: "center" as const,
+    textAlign: "center",
     padding: "24px",
     borderRadius: "16px",
     backgroundColor: "#f9fafb",
@@ -109,7 +102,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     padding: 0,
     margin: "0 0 24px 0",
     display: "flex",
-    flexWrap: "wrap" as const,
+    flexWrap: "wrap",
     justifyContent: "center",
     gap: "8px"
   };
@@ -129,26 +122,23 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     color: "#6b7280"
   };
 
-  // Обновленная плашка с синим цветом, белым шрифтом и крупным эмоджи девушки
   const ctaBlockStyle = {
     padding: "32px",
     backgroundColor: "#3b82f6",
     borderRadius: "12px",
-    textAlign: "center" as const,
+    textAlign: "center",
     marginBottom: "32px",
     border: "2px solid #2563eb",
-    position: "relative" as const
+    position: "relative"
   };
 
-  // Большой эмоджи как на плашках архетипов
   const ctaEmojiStyle = {
     fontSize: "48px",
     marginBottom: "20px",
     display: "block",
-    textAlign: "center" as const
+    textAlign: "center"
   };
 
-  // Заголовок CTA
   const ctaHeadlineStyle = {
     fontSize: "22px",
     fontWeight: "700",
@@ -158,7 +148,6 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     color: "white"
   };
 
-  // Основной текст CTA
   const ctaTextStyle = {
     fontSize: "16px",
     lineHeight: "1.5",
@@ -180,7 +169,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
     fontFamily: "'Montserrat', sans-serif",
     transition: "all 0.2s ease",
     border: "2px solid white",
-    textTransform: "uppercase" as const,
+    textTransform: "uppercase",
     letterSpacing: "0.5px"
   };
 
@@ -202,7 +191,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
       <h1 style={mainTitleStyle}>Ваши архетипы:</h1>
 
       {[first, second].map(([arch], index) => {
-        const data = archetypeDescriptions[arch as keyof typeof archetypeDescriptions];
+        const data = archetypeDescriptions[arch];
         if (!data) return null;
 
         return (
@@ -227,6 +216,50 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
               <h3 style={sectionTitleStyle}>Примеры брендов:</h3>
               <p style={examplesStyle}>{data.examples.join(", ")}</p>
             </div>
+
+            {index === 0 && (
+              <div style={{
+                marginTop: "32px",
+                textAlign: "center"
+              }}>
+                <div style={{
+                  display: "inline-block",
+                  color: "#9ca3af",
+                  fontSize: "10px",
+                  fontWeight: "600",
+                  fontFamily: "'Montserrat', sans-serif",
+                  letterSpacing: "1px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "12px",
+                  padding: "6px 12px",
+                  marginBottom: "8px"
+                }}>
+                  SCROLL
+                </div>
+                <div style={{ 
+                  fontSize: "18px",
+                  lineHeight: "0.8",
+                  opacity: 0.7,
+                  color: "#9ca3af",
+                  animation: "bounce 2s infinite"
+                }}>
+                  <style>{`
+                    @keyframes bounce {
+                      0%, 20%, 50%, 80%, 100% {
+                        transform: translateY(0);
+                      }
+                      40% {
+                        transform: translateY(-5px);
+                      }
+                      60% {
+                        transform: translateY(-3px);
+                      }
+                    }
+                  `}</style>
+                  ⌄<br/>⌄<br/>⌄
+                </div>
+              </div>
+            )}
           </div>
         );
       })}
@@ -236,7 +269,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
         <h3 style={ctaHeadlineStyle}>
           Как использовать эти результаты?
         </h3>
-        <div style={{ ...ctaTextStyle, textAlign: "center" as const }}>
+        <div style={{ ...ctaTextStyle, textAlign: "center" }}>
           <p style={{ marginBottom: "16px" }}>
             Архетип – это основа для всей коммуникации бренда.
           </p>
@@ -246,7 +279,7 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
           <p style={{ marginBottom: "0" }}>
             А еще увидите на реальных кейсах, как архетипы применяются в маркетинге.
           </p>
-    </div>
+        </div>
         <a
           href="https://kosovetis.notion.site/6374b409220047f881a3d07b768e5cba?v=24db274a728f80858cbd000cacebf08e"
           target="_blank"
@@ -275,5 +308,32 @@ export default function Results({ results, onRestart, idToArch }: ResultsProps) 
         </button>
       </div>
     </div>
+  );
+}
+
+// Демонстрационные данные для примера
+const mockResults = [
+  { blockIndex: 0, selected: ["q1", "q2"], ranked: ["q1", "q2", "q3", "q4", "q5"] },
+  { blockIndex: 1, selected: ["q6", "q7"], ranked: ["q6", "q7", "q8", "q9", "q10"] },
+  { blockIndex: 2, selected: ["q11", "q12"], ranked: ["q11", "q12", "q13", "q14", "q15"] }
+];
+
+const mockIdToArch = {
+  q1: "magician", q2: "hero", q3: "creator", q4: "sage", q5: "explorer",
+  q6: "magician", q7: "creator", q8: "hero", q9: "rebel", q10: "jester",
+  q11: "creator", q12: "magician", q13: "hero", q14: "sage", q15: "innocent"
+};
+
+export default function App() {
+  const handleRestart = () => {
+    alert("Перезапуск теста!");
+  };
+
+  return (
+    <Results 
+      results={mockResults} 
+      onRestart={handleRestart} 
+      idToArch={mockIdToArch} 
+    />
   );
 }
