@@ -317,7 +317,7 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
           </p>
         </div>
         <a
-          href="https://kosovetis.notion.site/6374b409220047f881a3d07b768e5cba?v=24db274a728f80858cbd000cacebf08e"
+          href="https://archetypes-guide.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
           style={ctaButtonStyle}
