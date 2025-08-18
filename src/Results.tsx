@@ -318,27 +318,12 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
         </div>
         <a
           href="https://t.me/a_kosovetis/70"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={ctaButtonStyle}
-          onClick={handleGuideClick} // ← Добавили отслеживание клика
-          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
-            const target = e.currentTarget as HTMLAnchorElement;
-            target.style.backgroundColor = "#f3f4f6";
-            target.style.color = "#1f2937";
-            target.style.transform = "translateY(-2px)";
-            target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
-          }}
-          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
-            const target = e.currentTarget as HTMLAnchorElement;
-            target.style.backgroundColor = "white";
-            target.style.color = "#3b82f6";
-            target.style.transform = "translateY(0)";
-            target.style.boxShadow = "none";
-          }}
-        >
-          Получить Гайд
-        </a>
+  target="_blank"
+  rel="noopener noreferrer"
+  style={ctaButtonStyle}
+>
+  Получить Гайд
+</a>
       </div>
 
       <div style={{ textAlign: "center" }}>
