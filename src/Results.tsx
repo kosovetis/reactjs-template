@@ -1,5 +1,5 @@
 import { useMemo, useEffect, CSSProperties } from "react";
-import { openLink } from '@telegram-apps/sdk-react';
+import { openTelegramLink } from '@telegram-apps/sdk-react';
 import { trackEvent, AnalyticsEvents } from "./utils/analytics.ts";
 
 interface ResultsProps {
@@ -76,14 +76,8 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
       primary_score: first[1]
     });
     
-    // Открываем ссылку на Telegram пост
-    try {
-      openLink('https://t.me/a_kosovetis/70');
-    } catch (error) {
-      console.error('Ошибка открытия ссылки:', error);
-      // Fallback - попытка открыть обычным способом
-      window.open('https://t.me/a_kosovetis/70', '_blank');
-    }
+    // Используем openTelegramLink для открытия ссылки на пост
+    openTelegramLink('https://t.me/a_kosovetis/70');
   };
 
   // Стили
