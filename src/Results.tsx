@@ -1,5 +1,5 @@
 import { useMemo, useEffect, CSSProperties } from "react";
-// Убираем импорты openLink/openTelegramLink, так как они больше не нужны
+import { miniApp } from '@telegram-apps/sdk-react'; // <-- 1. ИМПОРТИРУЕМ miniApp
 import { trackEvent, AnalyticsEvents } from "./utils/analytics.ts";
 
 interface ResultsProps {
@@ -66,6 +66,21 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
   }, [first, second, sortedArchetypes.length]);
 
   if (!results || !first) return <div>Ошибка: не удалось определить архетип</div>;
+  
+  // ↓↓↓ 2. ОБНОВЛЯЕМ ОБРАБОТЧИК КЛИКА ↓↓↓
+  const handleGuideClick = () => {
+    // Сначала отправляем аналитику
+    trackEvent(AnalyticsEvents.GUIDE_CLICKED, {
+      primary_archetype: first[0],
+      secondary_archetype: second ? second[0] : null,
+      primary_score: first[1]
+    });
+
+    // Затем закрываем приложение.
+    // Переход по ссылке href в теге <a> произойдет автоматически.
+    miniApp.close();
+  };
+
 
   // Стили
   const containerStyle: CSSProperties = {
@@ -198,7 +213,7 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
     textTransform: "uppercase",
     letterSpacing: "0.5px",
     cursor: "pointer",
-    textDecoration: "none" // Добавляем это, чтобы убрать подчеркивание у ссылки
+    textDecoration: "none"
   };
 
   const restartButtonStyle: CSSProperties = {
@@ -309,16 +324,11 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
           </p>
         </div>
         
-        {/* ↓↓↓ ОСНОВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ↓↓↓ */}
         <a
           href="https://t.me/a_kosovetis/70"
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => trackEvent(AnalyticsEvents.GUIDE_CLICKED, {
-            primary_archetype: first[0],
-            secondary_archetype: second ? second[0] : null,
-            primary_score: first[1]
-          })}
+          onClick={handleGuideClick} // <-- 3. ВЫЗЫВАЕМ НОВЫЙ ОБРАБОТЧИК
           style={ctaButtonStyle}
           onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
             const target = e.currentTarget;
