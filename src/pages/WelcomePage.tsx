@@ -1,10 +1,20 @@
 // src/pages/WelcomePage.tsx
 import { useNavigate } from 'react-router-dom';
+import { trackEvent, AnalyticsEvents } from '../utils/analytics'; // ← ИЗМЕНЕНИЕ: Импортируем аналитику
 
 export default function WelcomePage() {
   const navigate = useNavigate();
 
-  // Стили
+  // --- ИЗМЕНЕНИЕ: Новая функция для обработки клика ---
+  const handleStartClick = () => {
+    // Отправляем событие в Яндекс.Метрику
+    trackEvent(AnalyticsEvents.TEST_STARTED);
+    // Переходим на страницу теста
+    navigate('/test');
+  };
+  // --- КОНЕЦ ИЗМЕНЕНИЯ ---
+
+  // Стили (остаются без изменений)
   const containerStyle = {
     backgroundColor: 'white',
     padding: '40px 24px 24px 24px',
@@ -78,7 +88,6 @@ export default function WelcomePage() {
   return (
     <div style={containerStyle}>
       <div style={avatarGroupStyle}>
-        {/* --- ИЗМЕНЕНИЯ ЗДЕСЬ --- */}
         <div style={{...avatarLeftStyle, backgroundImage: 'url(img/avatar1.png)'}}></div>
         <div style={{...avatarCenterStyle, backgroundImage: 'url(img/avatar2.png)'}}></div>
         <div style={{...avatarRightStyle, backgroundImage: 'url(img/avatar3.png)'}}></div>
@@ -101,7 +110,7 @@ export default function WelcomePage() {
 
       <button
         style={buttonStyle}
-        onClick={() => navigate('/test')}
+        onClick={handleStartClick} // ← ИЗМЕНЕНИЕ: Используем новую функцию
       >
         Начать тест
       </button>
