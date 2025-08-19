@@ -1,5 +1,5 @@
 import { useMemo, useEffect, CSSProperties } from "react";
-import { miniApp } from '@telegram-apps/sdk-react'; // <-- 1. ИМПОРТИРУЕМ miniApp
+import { miniApp, openTelegramLink } from '@telegram-apps/sdk-react';
 import { trackEvent, AnalyticsEvents } from "./utils/analytics.ts";
 
 interface ResultsProps {
@@ -66,18 +66,18 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
   }, [first, second, sortedArchetypes.length]);
 
   if (!results || !first) return <div>Ошибка: не удалось определить архетип</div>;
-  
-  // ↓↓↓ 2. ОБНОВЛЯЕМ ОБРАБОТЧИК КЛИКА ↓↓↓
+
   const handleGuideClick = () => {
-    // Сначала отправляем аналитику
     trackEvent(AnalyticsEvents.GUIDE_CLICKED, {
       primary_archetype: first[0],
       secondary_archetype: second ? second[0] : null,
       primary_score: first[1]
     });
 
-    // Затем закрываем приложение.
-    // Переход по ссылке href в теге <a> произойдет автоматически.
+    // Команда №1: Открыть ссылку
+    openTelegramLink('https://t.me/a_kosovetis/70');
+    
+    // Команда №2: Закрыть приложение
     miniApp.close();
   };
 
@@ -213,7 +213,6 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
     textTransform: "uppercase",
     letterSpacing: "0.5px",
     cursor: "pointer",
-    textDecoration: "none"
   };
 
   const restartButtonStyle: CSSProperties = {
@@ -324,20 +323,17 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
           </p>
         </div>
         
-        <a
-          href="https://t.me/a_kosovetis/70"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleGuideClick} // <-- 3. ВЫЗЫВАЕМ НОВЫЙ ОБРАБОТЧИК
+        <button
+          onClick={handleGuideClick}
           style={ctaButtonStyle}
-          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
             const target = e.currentTarget;
             target.style.backgroundColor = "#f3f4f6";
             target.style.color = "#1f2937";
             target.style.transform = "translateY(-2px)";
             target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
           }}
-          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
             const target = e.currentTarget;
             target.style.backgroundColor = "white";
             target.style.color = "#3b82f6";
@@ -346,7 +342,7 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
           }}
         >
           Получить Гайд
-        </a>
+        </button>
       </div>
 
       <div style={{ textAlign: "center" }}>
