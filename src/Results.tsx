@@ -77,8 +77,10 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
     // Команда №1: Открыть ссылку
     openTelegramLink('https://t.me/a_kosovetis/70');
     
-    // Команда №2: Закрыть приложение
-    miniApp.close();
+    // Команда №2: Закрыть приложение с небольшой задержкой
+    setTimeout(() => {
+        miniApp.close();
+    }, 100); // 100 миллисекунд должно быть достаточно
   };
 
 
