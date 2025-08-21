@@ -6,7 +6,7 @@ import { Root } from './components/Root';
 import './index.css';
 
 // 2. Вызвать инициализацию перед отрисовкой приложения
-init({ debug: true, eruda: true, mockForMacOS: true }).then(() => {
+init({ debug: true, eruda: false, mockForMacOS: true }).then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <Root />
