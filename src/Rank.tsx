@@ -133,7 +133,7 @@ export default function Rank({
       </div>
 
       <div style={{
-        padding: "24px", maxWidth: "700px", margin: "0 auto", fontFamily: "'Montserrat', sans-serif", paddingBottom: "32px", paddingTop: "20px",
+        padding: "24px", maxWidth: "700px", margin: "0 auto", fontFamily: "'Montserrat', sans-serif", paddingBottom: "48px", paddingTop: "20px",
       }}>
         <h1 style={{
           fontSize: "20px", marginBottom: "12px", fontWeight: "600", textAlign: "left", lineHeight: "1.4", fontFamily: "'Montserrat', sans-serif", color: "#1f2937"

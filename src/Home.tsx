@@ -131,7 +131,7 @@ export default function Home() {
     padding: "8px",
     borderRadius: "6px",
     transition: "background-color 0.2s ease",
-    color: "#1f2937", 
+    color: "#1f2937",
   };
 
   return (
@@ -144,10 +144,7 @@ export default function Home() {
         }}></div>
       </div>
 
-      {/* ↓↓↓ ГЛАВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ↓↓↓
-        Убираем className и прописываем стили с отступами напрямую
-      */}
-      <div style={{ padding: "24px", maxWidth: "700px", margin: "0 auto", paddingBottom: "32px", paddingTop: "20px" }}>
+      <div style={{ padding: "24px", maxWidth: "700px", margin: "0 auto", paddingBottom: "48px", paddingTop: "20px" }}>
         <div>
           <h1 style={questionStyle}>
             {questions[blockIndex]}
