@@ -75,7 +75,7 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
     });
 
     // Команда №1: Открыть ссылку
-    openTelegramLink('https://t.me/a_kosovetis/70');
+    openTelegramLink('https://archetypes-guide.vercel.app/');
     
     // Команда №2: Закрыть приложение с небольшой задержкой
     setTimeout(() => {
