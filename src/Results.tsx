@@ -1,5 +1,5 @@
 import { useMemo, useEffect, CSSProperties } from "react";
-import { miniApp, openTelegramLink } from '@telegram-apps/sdk-react';
+import { openLink } from '@telegram-apps/sdk-react';
 import { trackEvent, AnalyticsEvents } from "./utils/analytics.ts";
 
 interface ResultsProps {
@@ -74,13 +74,8 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
       primary_score: first[1]
     });
 
-    // Команда №1: Открыть ссылку
-    openTelegramLink('https://archetypes-guide.vercel.app/');
-    
-    // Команда №2: Закрыть приложение с небольшой задержкой
-    setTimeout(() => {
-        miniApp.close();
-    }, 100); // 100 миллисекунд должно быть достаточно
+    // Используем openLink для внешних сайтов
+    openLink('https://archetypes-guide.vercel.app/');
   };
 
 
