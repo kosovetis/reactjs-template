@@ -186,7 +186,7 @@ function Results({ results, onRestart, idToArch, tracking = true }: ResultsProps
           const isTop2 = index < 2;
           return (
             <div key={entry.slug} style={{ marginBottom: "16px", opacity: entry.score === 0 ? 0.55 : 1 }}>
-              {isTop2 && (
+              {index < 3 && (
                 <div style={{ marginBottom: "6px" }}>
                   <span style={index === 0 ? badgeMain : badgeSecondary}>
                     {index === 0 ? "Основной" : "Дополнительный"}
