@@ -1,11 +1,15 @@
 import { useMemo, useEffect, CSSProperties } from "react";
 import { openLink } from '@telegram-apps/sdk-react';
+import { blocks } from "./phrases";
 import { trackEvent, AnalyticsEvents } from "./utils/analytics.ts";
+import { colors, font, gradients, gradTitle, highlightWord, ctaButton } from "./styles/tokens";
 
 interface ResultsProps {
   results?: { blockIndex: number; selected: string[]; ranked: string[] }[];
   onRestart: () => void;
   idToArch: Record<string, string>;
+  /* false — служебный превью-режим (/#/preview): события в Метрику не отправляются */
+  tracking?: boolean;
 }
 
 interface ArchetypeData {
@@ -17,22 +21,26 @@ interface ArchetypeData {
   examples: string[];
 }
 
+// Цвета архетипов разведены по hue для различимости шкал на белом фоне.
 const archetypeDescriptions: Record<string, ArchetypeData> = {
-  caregiver: { name: "ЗАБОТЛИВЫЙ", emoji: "🤲", color: "#10B981", description: "Защищает и поддерживает — словно надёжный друг, который всегда подставит плечо, делая мир безопаснее.", traits: ["Забота", "Сопереживание", "Желание помочь", "Альтруизм"], examples: ["Johnson & Johnson", "Nivea", "Pampers"] },
+  caregiver: { name: "ЗАБОТЛИВЫЙ", emoji: "🤲", color: "#14B8A6", description: "Защищает и поддерживает — словно надёжный друг, который всегда подставит плечо, делая мир безопаснее.", traits: ["Забота", "Сопереживание", "Желание помочь", "Альтруизм"], examples: ["Johnson & Johnson", "Nivea", "Pampers"] },
   jester: { name: "ШУТ", emoji: "🎭", color: "#F59E0B", description: "Снимает напряжение, прогоняет скуку и заряжает юмором, помогая жить здесь и сейчас и наслаждаться моментом.", traits: ["Юмор", "Веселье", "Оптимизм", "Легкость"], examples: ["Burger King", "Old Spice", "Skittles"] },
-  magician: { name: "МАГ", emoji: "🪄", color: "#8B5CF6", description: "Воплощает невозможное, расширяя границы реальности и вдохновляя людей.", traits: ["Инновации", "Визионерство", "Трансформация", "Возможности"], examples: ["Apple", "Disney", "Dyson"] },
+  magician: { name: "МАГ", emoji: "🪄", color: "#7C3AED", description: "Воплощает невозможное, расширяя границы реальности и вдохновляя людей.", traits: ["Инновации", "Визионерство", "Трансформация", "Возможности"], examples: ["Apple", "Disney", "Dyson"] },
   hero: { name: "ГЕРОЙ", emoji: "🏆", color: "#DC2626", description: "Бросает вызов трудностям и ведёт за собой, мотивируя преодолевать препятствия и достигать смелых целей.", traits: ["Мужество", "Решительность", "Честь", "Мотивация"], examples: ["Nike", "Red Bull", "BMW"] },
-  creator: { name: "ТВОРЕЦ", emoji: "🎨", color: "#7C3AED", description: "Открывает возможности к самовыражению и созданию нового, воплощая идеи в уникальные формы и поощряя оригинальное видение.", traits: ["Креативность", "Воображение", "Самовыражение", "Оригинальность"], examples: ["Adobe", "LEGO", "Pinterest"] },
+  creator: { name: "ТВОРЕЦ", emoji: "🎨", color: "#A855F7", description: "Открывает возможности к самовыражению и созданию нового, воплощая идеи в уникальные формы и поощряя оригинальное видение.", traits: ["Креативность", "Воображение", "Самовыражение", "Оригинальность"], examples: ["Adobe", "LEGO", "Pinterest"] },
   rebel: { name: "БУНТАРЬ", emoji: "⚡", color: "#991B1B", description: "Бросает вызов статус-кво, шокирует и нарушает правила, дает ощущение настоящей свободы.", traits: ["Нарушение правил", "Освобождение", "Дерзость", "Шок"], examples: ["Harley-Davidson","Diesel"] },
-  sage: { name: "МУДРЕЦ", emoji: "📚", color: "#1E40AF", description: "Раскрывает истину и делится проверенными знаниями, избавляя от заблуждений и проясняя картину мира.", traits: ["Мудрость", "Знания", "Истина", "Интеллект"], examples: ["Google", "National Geographic", "BBC"] },
-  everyman: { name: "СЛАВНЫЙ МАЛЫЙ", emoji: "🤝", color: "#059669", description: "«Такой же, как ты»: понимает повседневные заботы и создаёт ощущение домашнего уюта, где каждому рады.", traits: ["Принадлежность", "Понятность", "Дружелюбие", "Доступность"], examples: ["IKEA", "Пятерочка"] },
-  ruler: { name: "ПРАВИТЕЛЬ", emoji: "👑", color: "#7C2D12", description: "Устанавливает порядок и поднимает планку, обещая превосходное качество и статус тем, кто следует за ним.", traits: ["Лидерство", "Влияние", "Престиж"], examples: ["Mercedes-Benz", "Rolex"] },
-  innocent: { name: "НЕВИННЫЙ", emoji: "🌸", color: "#DB2777", description: "Как луч света: дарит ощущение чистоты, надежды и радости маленьких моментов.", traits: ["Оптимизм", "Честность", "Чистота", "Простота"], examples: ["Coca-Cola", "Kinder"] },
+  sage: { name: "МУДРЕЦ", emoji: "📚", color: "#2563EB", description: "Раскрывает истину и делится проверенными знаниями, избавляя от заблуждений и проясняя картину мира.", traits: ["Мудрость", "Знания", "Истина", "Интеллект"], examples: ["Google", "National Geographic", "BBC"] },
+  everyman: { name: "СЛАВНЫЙ МАЛЫЙ", emoji: "🤝", color: "#65A30D", description: "«Такой же, как ты»: понимает повседневные заботы и создаёт ощущение домашнего уюта, где каждому рады.", traits: ["Принадлежность", "Понятность", "Дружелюбие", "Доступность"], examples: ["IKEA", "Пятерочка"] },
+  ruler: { name: "ПРАВИТЕЛЬ", emoji: "👑", color: "#92400E", description: "Устанавливает порядок и поднимает планку, обещая превосходное качество и статус тем, кто следует за ним.", traits: ["Лидерство", "Влияние", "Престиж"], examples: ["Mercedes-Benz", "Rolex"] },
+  innocent: { name: "НЕВИННЫЙ", emoji: "🌸", color: "#EC4899", description: "Как луч света: дарит ощущение чистоты, надежды и радости маленьких моментов.", traits: ["Оптимизм", "Честность", "Чистота", "Простота"], examples: ["Coca-Cola", "Kinder"] },
   explorer: { name: "ИССЛЕДОВАТЕЛЬ", emoji: "🧭", color: "#16A34A", description: "Расширяет горизонты и зовёт к приключениям, помогая открывать новое и сохранять чувство свободы.", traits: ["Свобода", "Поиск", "Неутомимость"], examples: ["Jeep", "The North Face", "GoPro"] },
   lover: { name: "ЛЮБОВНИК", emoji: "❤️", color: "#BE185D", description: "Очаровывает эстетикой и чувственностью, дарит насыщенные эмоции и удовольствие, создавая атмосферу глубокой связи.", traits: ["Чувственность", "Наслаждение", "Эстетика", "Удовольствие"], examples: ["Victoria's Secret", "Godiva"] }
 };
 
-function Results({ results, onRestart, idToArch }: ResultsProps) {
+// Максимальный балл одного архетипа: на каждом блоке топ-1 даёт 5 баллов.
+const MAX_SCORE = blocks.length * 5;
+
+function Results({ results, onRestart, idToArch, tracking = true }: ResultsProps) {
   const archetypeScores = useMemo(() => {
     if (!results) return {};
     const scores: Record<string, number> = {};
@@ -48,294 +56,202 @@ function Results({ results, onRestart, idToArch }: ResultsProps) {
     return scores;
   }, [results, idToArch]);
 
-  const sortedArchetypes = Object.entries(archetypeScores).sort(([, a], [, b]) => (b as number) - (a as number));
-  const [first, second] = sortedArchetypes;
+  // Все 12 архетипов со счётом (отсутствующие = 0), отсортированы по убыванию.
+  const ranking = useMemo(() => {
+    return Object.entries(archetypeDescriptions)
+      .map(([slug, data]) => ({ slug, data, score: archetypeScores[slug] ?? 0 }))
+      .sort((a, b) => b.score - a.score);
+  }, [archetypeScores]);
+
+  const first = ranking[0];
+  const second = ranking[1];
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    if (first && second) {
+    if (tracking && first && second && first.score > 0) {
       trackEvent(AnalyticsEvents.TEST_COMPLETED, {
-        primary_archetype: first[0],
-        primary_score: first[1],
-        secondary_archetype: second[0],
-        secondary_score: second[1],
-        total_archetypes: sortedArchetypes.length
+        primary_archetype: first.slug,
+        primary_score: first.score,
+        secondary_archetype: second.slug,
+        secondary_score: second.score,
+        total_archetypes: ranking.length
       });
     }
-  }, [first, second, sortedArchetypes.length]);
+  }, [tracking, first, second, ranking.length]);
 
-  if (!results || !first) return <div>Ошибка: не удалось определить архетип</div>;
+  if (!results || !first || first.score === 0) {
+    return <div style={{ padding: 24, fontFamily: font.text, color: colors.ink }}>Ошибка: не удалось определить архетип</div>;
+  }
 
   const handleGuideClick = () => {
-    trackEvent(AnalyticsEvents.GUIDE_CLICKED, {
-      primary_archetype: first[0],
-      secondary_archetype: second ? second[0] : null,
-      primary_score: first[1]
-    });
+    if (tracking) {
+      trackEvent(AnalyticsEvents.GUIDE_CLICKED, {
+        primary_archetype: first.slug,
+        secondary_archetype: second ? second.slug : null,
+        primary_score: first.score
+      });
+    }
 
     // Используем openLink для внешних сайтов
     openLink('https://archetypes-guide.vercel.app/');
   };
 
-
-  // Стили
+  // ── Стили ───────────────────────────────────────────────
   const containerStyle: CSSProperties = {
-    padding: "24px",
-    maxWidth: "800px",
+    padding: "28px 24px 40px",
+    maxWidth: "680px",
     margin: "0 auto",
-    fontFamily: "'Montserrat', sans-serif",
-    paddingBottom: "32px"
+    fontFamily: font.text,
+    color: colors.ink,
   };
 
+  // Заголовок как .section-title на сайте: оранжевый градиент по тексту
   const mainTitleStyle: CSSProperties = {
-    fontSize: "28px",
-    fontWeight: "700",
-    textAlign: "center",
-    marginBottom: "32px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "#1f2937"
-  };
-
-  const archetypeContainerStyle: CSSProperties = {
-    marginBottom: "48px",
-    textAlign: "center",
-    padding: "24px",
-    borderRadius: "16px",
-    backgroundColor: "#f9fafb",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
-  };
-
-  const emojiStyle: CSSProperties = {
-    fontSize: "48px",
-    marginBottom: "16px",
-    display: "block"
-  };
-
-  const archetypeNameStyle: CSSProperties = {
+    ...gradTitle,
+    fontFamily: font.display,
     fontSize: "24px",
-    fontWeight: "700",
-    marginBottom: "16px",
-    fontFamily: "'Montserrat', sans-serif"
+    fontWeight: font.heading,
+    textAlign: "left",
+    lineHeight: "1.3",
+    letterSpacing: "-0.5px",
+    marginBottom: "28px",
   };
 
-  const descriptionStyle: CSSProperties = {
-    fontSize: "18px",
-    lineHeight: "1.6",
-    maxWidth: "600px",
-    margin: "0 auto 24px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "#374151"
+  const badgeMain: CSSProperties = {
+    display: "inline-block",
+    fontSize: "10.5px",
+    fontWeight: font.semibold,
+    letterSpacing: "1px",
+    textTransform: "uppercase",
+    color: colors.white,
+    background: gradients.accent,
+    padding: "3px 10px",
+    borderRadius: "999px",
   };
 
-  const sectionTitleStyle: CSSProperties = {
-    fontSize: "18px",
-    fontWeight: "600",
-    marginBottom: "12px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "#1f2937"
-  };
-
-  const traitsListStyle: CSSProperties = {
-    listStyle: "none",
-    padding: 0,
-    margin: "0 0 24px 0",
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: "8px"
-  };
-
-  const traitItemStyle: CSSProperties = {
-    background: "#e5e7eb",
-    padding: "6px 12px",
-    borderRadius: "20px",
-    fontSize: "14px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "#374151"
-  };
-
-  const examplesStyle: CSSProperties = {
-    fontSize: "16px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "#6b7280"
+  const badgeSecondary: CSSProperties = {
+    ...badgeMain,
+    color: colors.baseDeep,
+    background: "transparent",
+    border: `1.5px solid ${colors.baseDeep}`,
+    padding: "2px 9px",
   };
 
   const ctaBlockStyle: CSSProperties = {
-    padding: "32px",
-    backgroundColor: "#3b82f6",
-    borderRadius: "12px",
+    padding: "28px 24px",
+    background: gradients.bandChroma,
+    borderRadius: "20px",
     textAlign: "center",
-    marginBottom: "32px",
-    border: "2px solid #2563eb",
-    position: "relative"
-  };
-
-  const ctaEmojiStyle: CSSProperties = {
-    fontSize: "48px",
-    marginBottom: "20px",
-    display: "block",
-    textAlign: "center"
+    marginBottom: "28px",
   };
 
   const ctaHeadlineStyle: CSSProperties = {
-    fontSize: "22px",
-    fontWeight: "700",
-    lineHeight: "1.3",
+    fontFamily: font.display,
+    fontSize: "19px",
+    fontWeight: font.semibold,
+    lineHeight: "1.35",
+    letterSpacing: "-0.3px",
     marginBottom: "16px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "white"
+    color: colors.ink,
   };
 
   const ctaTextStyle: CSSProperties = {
-    fontSize: "16px",
-    lineHeight: "1.5",
+    fontSize: "15px",
+    lineHeight: "1.55",
     marginBottom: "24px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "white",
-    opacity: 0.95
-  };
-
-  const ctaButtonStyle: CSSProperties = {
-    display: "inline-block",
-    backgroundColor: "white",
-    color: "#3b82f6",
-    padding: "16px 32px",
-    borderRadius: "8px",
-    fontSize: "16px",
-    fontWeight: "700",
-    border: "2px solid white",
-    fontFamily: "'Montserrat', sans-serif",
-    transition: "all 0.2s ease",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
-    cursor: "pointer",
+    color: colors.inkSoft,
   };
 
   const restartButtonStyle: CSSProperties = {
     background: "none",
     border: "none",
-    color: "#3b82f6",
-    fontSize: "16px",
-    fontFamily: "'Montserrat', sans-serif",
+    color: colors.inkFaint,
+    fontSize: "14px",
+    fontFamily: font.text,
     textDecoration: "underline",
     cursor: "pointer",
     padding: "8px 0",
     display: "block",
-    margin: "0 auto"
+    margin: "0 auto",
   };
 
   return (
     <div style={containerStyle}>
       <h1 style={mainTitleStyle}>Ваши архетипы:</h1>
 
-      {[first, second].map(([arch], index) => {
-        const data = archetypeDescriptions[arch as keyof typeof archetypeDescriptions];
-        if (!data) return null;
-
-        return (
-          <div key={arch} style={archetypeContainerStyle}>
-            <span style={emojiStyle}>{data.emoji}</span>
-            <h2 style={{ ...archetypeNameStyle, color: "#1f2937" }}>
-              <span style={{ color: "#1f2937" }}>{index === 0 ? "ОСНОВНОЙ: " : "ДОПОЛНИТЕЛЬНЫЙ: "}</span>
-              <span style={{ color: data.color }}>{data.name}</span>
-            </h2>
-            <p style={descriptionStyle}>{data.description}</p>
-
-            <div>
-              <h3 style={sectionTitleStyle}>Ключевые черты:</h3>
-              <ul style={traitsListStyle}>
-                {data.traits.map((trait, idx) => (
-                  <li key={idx} style={traitItemStyle}>{trait}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 style={sectionTitleStyle}>Примеры брендов:</h3>
-              <p style={examplesStyle}>{data.examples.join(", ")}</p>
-            </div>
-
-            {index === 0 && (
+      {/* Полный рейтинг всех 12 архетипов со шкалами */}
+      <div style={{ marginBottom: "36px" }}>
+        {ranking.map((entry, index) => {
+          const pct = MAX_SCORE > 0 ? Math.round((entry.score / MAX_SCORE) * 100) : 0;
+          const isTop2 = index < 2;
+          return (
+            <div key={entry.slug} style={{ marginBottom: "16px", opacity: entry.score === 0 ? 0.55 : 1 }}>
+              {isTop2 && (
+                <div style={{ marginBottom: "6px" }}>
+                  <span style={index === 0 ? badgeMain : badgeSecondary}>
+                    {index === 0 ? "Основной" : "Дополнительный"}
+                  </span>
+                </div>
+              )}
               <div style={{
-                marginTop: "32px",
-                textAlign: "center"
-              } as CSSProperties}>
-                <div style={{
-                  display: "inline-block",
-                  color: "#9ca3af",
-                  fontSize: "10px",
-                  fontWeight: "600",
-                  fontFamily: "'Montserrat', sans-serif",
-                  letterSpacing: "1px",
-                  border: "1px solid #d1d5db",
-                  borderRadius: "12px",
-                  padding: "6px 12px",
-                  marginBottom: "8px"
-                } as CSSProperties}>
-                  SCROLL
-                </div>
-                <div style={{ 
-                  fontSize: "18px",
-                  lineHeight: "0.8",
-                  opacity: 0.7,
-                  color: "#9ca3af",
-                  animation: "bounce 2s infinite"
-                } as CSSProperties}>
-                  <style>{`
-                    @keyframes bounce {
-                      0%, 20%, 50%, 80%, 100% {
-                        transform: translateY(0);
-                      }
-                      40% {
-                        transform: translateY(-5px);
-                      }
-                      60% {
-                        transform: translateY(-3px);
-                      }
-                    }
-                  `}</style>
-                  ⌄<br/>⌄<br/>⌄
-                </div>
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                marginBottom: "6px", fontSize: "14.5px",
+                fontWeight: isTop2 ? font.heading : font.medium,
+                color: isTop2 ? colors.ink : colors.inkSoft,
+              }}>
+                <span>
+                  <span style={{ marginRight: "6px" }}>{entry.data.emoji}</span>
+                  {entry.data.name}
+                </span>
+                <span style={{ color: colors.inkFaint, fontSize: "12.5px", fontWeight: font.medium, flexShrink: 0, marginLeft: "8px" }}>
+                  {entry.score}/{MAX_SCORE}
+                </span>
               </div>
-            )}
-          </div>
-        );
-      })}
+              <div style={{
+                height: "10px", width: "100%", backgroundColor: colors.track,
+                borderRadius: "999px", overflow: "hidden",
+              }}>
+                <div style={{
+                  height: "100%", width: `${pct}%`,
+                  background: entry.data.color,
+                  boxShadow: isTop2 ? `0 0 12px ${entry.data.color}55` : "none",
+                  borderRadius: "999px", transition: "width 0.5s ease",
+                }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
       <div style={ctaBlockStyle}>
-        <span style={ctaEmojiStyle}>👩‍💼</span>
         <h3 style={ctaHeadlineStyle}>
           Как использовать эти результаты?
         </h3>
-        <div style={{ ...ctaTextStyle, textAlign: "center" as const }}>
-          <p style={{ marginBottom: "16px" }}>
+        <div style={{ ...ctaTextStyle, textAlign: "left" }}>
+          <p style={{ marginBottom: "14px" }}>
             Архетип – это основа для всей коммуникации бренда.
           </p>
-          <p style={{ marginBottom: "16px" }}>
-            У меня есть целый <strong>ГАЙД</strong>, из которого вы узнаете темную сторону вашего архетипа и его суперсилу, какие ценности он транслирует вашей аудитории, и как не попасть в ловушку.
+          <p style={{ marginBottom: "14px" }}>
+            У меня есть целый <b>ГАЙД</b>, из которого вы узнаете{' '}
+            <span style={highlightWord}>тёмную сторону вашего архетипа и его суперсилу</span>,
+            какие ценности он транслирует вашей аудитории, и как не попасть в ловушку.
           </p>
           <p style={{ marginBottom: "0" }}>
-            А еще – узнаете, как превратить это знание в реальный инструмент, как отстроиться от конкурентов, и как говорить с клиентами, чтобы они не только доверяли, но и покупали.
+            А еще – узнаете, как превратить это знание в реальный инструмент, как отстроиться
+            от конкурентов, и как говорить с клиентами, чтобы они не только доверяли, но и покупали.
           </p>
         </div>
-        
+
         <button
           onClick={handleGuideClick}
-          style={ctaButtonStyle}
+          style={ctaButton}
           onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-            const target = e.currentTarget;
-            target.style.backgroundColor = "#f3f4f6";
-            target.style.color = "#1f2937";
-            target.style.transform = "translateY(-2px)";
-            target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = "0 8px 25px rgba(236, 103, 45, 0.6)";
           }}
           onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-            const target = e.currentTarget;
-            target.style.backgroundColor = "white";
-            target.style.color = "#3b82f6";
-            target.style.transform = "translateY(0)";
-            target.style.boxShadow = "none";
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 4px 15px rgba(236, 103, 45, 0.4)";
           }}
         >
           Получить Гайд

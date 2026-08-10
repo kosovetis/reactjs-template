@@ -1,8 +1,9 @@
 // src/Home.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, CSSProperties } from "react";
 import { blocks, questions, rankingTitles, idToArch } from "./phrases";
 import Rank from "./Rank";
 import Results from "./Results";
+import { colors, font, gradients, ctaButton } from "./styles/tokens";
 
 const idToText = (id: string) => {
   for (const block of blocks) {
@@ -12,12 +13,26 @@ const idToText = (id: string) => {
   return id;
 };
 
+// Перемешивание порядка утверждений внутри блока (Fisher-Yates).
+// Снимает эффект первичности: позиция в списке не влияет на выбор.
+// Меняет только порядок показа — id и скоринг не затрагиваются.
+const shuffle = <T,>(arr: T[]): T[] => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
 export default function Home() {
   const [blockIndex, setBlockIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
   const [showRank, setShowRank] = useState(false);
   const [results, setResults] = useState<{ blockIndex: number; selected: string[]; ranked: string[] }[]>([]);
   const [showResults, setShowResults] = useState(false);
+  // Свой случайный порядок для каждого блока, фиксируется один раз на сессию.
+  const [shuffledBlocks] = useState(() => blocks.map(block => shuffle(block)));
 
   // Прокрутка к началу страницы при изменении блока
   useEffect(() => {
@@ -97,50 +112,90 @@ export default function Home() {
   const progress = (currentStep / totalSteps) * 100;
 
   // Стили
-  const questionStyle = {
-    fontSize: "20px",
-    fontWeight: "600",
-    textAlign: "left" as const,
-    marginBottom: "8px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "#1f2937",
-    lineHeight: "1.4"
-  };
-
-  const instructionStyle = {
-    fontSize: "14px",
-    fontWeight: "400",
-    textAlign: "center" as const,
-    marginBottom: "24px",
-    fontFamily: "'Montserrat', sans-serif",
-    color: "#6b7280",
-    fontStyle: "italic",
-    backgroundColor: "#f9fafb",
-    padding: "8px 12px",
-    borderRadius: "6px",
-    border: "1px solid #e5e7eb"
-  };
-
-  const labelStyle = {
-    display: "block",
+  const questionStyle: CSSProperties = {
+    fontFamily: font.display,
+    fontSize: "18px",
+    fontWeight: font.semibold,
+    textAlign: "left",
     marginBottom: "12px",
+    color: colors.ink,
+    lineHeight: "1.4",
+    letterSpacing: "-0.3px",
+  };
+
+  const instructionStyle: CSSProperties = {
+    fontSize: "14px",
+    fontWeight: font.regular,
+    textAlign: "center",
+    marginBottom: "20px",
+    color: colors.inkSoft,
+    backgroundColor: colors.panel,
+    padding: "8px 12px",
+    borderRadius: "10px",
+    border: `1px solid ${colors.panel2}`,
+  };
+
+  const labelStyle: CSSProperties = {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "10px",
+    marginBottom: "10px",
     fontSize: "16px",
     lineHeight: "1.5",
-    fontFamily: "'Montserrat', sans-serif",
     cursor: "pointer",
-    padding: "8px",
-    borderRadius: "6px",
-    transition: "background-color 0.2s ease",
-    color: "#1f2937",
+    padding: "12px 14px",
+    borderRadius: "12px",
+    transition: "all 0.2s ease",
+    color: colors.ink,
+  };
+
+  const counterStyle: CSSProperties = {
+    fontSize: "14px",
+    fontWeight: font.medium,
+    textAlign: "center",
+    color: colors.inkSoft,
+    backgroundColor: selected.length === 5 ? colors.panel2 : colors.panel,
+    border: `1px solid ${selected.length === 5 ? colors.baseDeep : colors.panel2}`,
+    padding: "8px 14px",
+    borderRadius: "999px",
+    display: "block",
+    width: "fit-content",
+    margin: "16px auto 0 auto",
+    transition: "all 0.2s ease",
+  };
+
+  const backButtonStyle: CSSProperties = {
+    padding: "12px 24px",
+    background: "transparent",
+    color: colors.inkSoft,
+    borderRadius: "999px",
+    cursor: "pointer",
+    border: `1px solid ${colors.lineStrong}`,
+    fontSize: "16px",
+    fontWeight: font.regular,
+    fontFamily: font.text,
+    transition: "all 0.2s ease",
+    display: "inline-block",
+    marginRight: "12px",
+  };
+
+  const nextButtonStyle: CSSProperties = {
+    ...ctaButton,
+    padding: "13px 32px",
+    ...(selected.length !== 5 && {
+      background: colors.lineStrong,
+      boxShadow: "none",
+      cursor: "not-allowed",
+    }),
   };
 
   return (
-    <div style={{ backgroundColor: 'white', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: colors.bg, minHeight: '100vh', fontFamily: font.text }}>
       <div style={{
-        position: "fixed", top: 0, left: 0, right: 0, height: "4px", backgroundColor: "#e5e7eb", zIndex: 1000
+        position: "fixed", top: 0, left: 0, right: 0, height: "4px", backgroundColor: colors.track, zIndex: 1000
       }}>
         <div style={{
-          height: "100%", backgroundColor: "#3b82f6", width: `${progress}%`, transition: "width 0.3s ease"
+          height: "100%", background: gradients.base, width: `${progress}%`, transition: "width 0.3s ease"
         }}></div>
       </div>
 
@@ -154,53 +209,48 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          {blocks[blockIndex].map(({ id, text }) => (
-            <label
-              key={id}
-              style={{
-                ...labelStyle,
-                backgroundColor: selected.includes(id) ? "#f0f9ff" : "#ffffff"
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={selected.includes(id)}
-                onChange={() => toggle(id)}
-                style={{ marginRight: "10px", transform: "scale(1.2)" }}
-              />
-              <span style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                {text}
-              </span>
-            </label>
-          ))}
+        <div>
+          {shuffledBlocks[blockIndex].map(({ id, text }) => {
+            const isSelected = selected.includes(id);
+            return (
+              <label
+                key={id}
+                style={{
+                  ...labelStyle,
+                  backgroundColor: isSelected ? colors.panel : colors.bg,
+                  border: `1.5px solid ${isSelected ? colors.baseDeep : colors.line}`,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => toggle(id)}
+                  style={{ marginTop: "3px", transform: "scale(1.2)", accentColor: colors.baseDeep, flexShrink: 0 }}
+                />
+                <span>{text}</span>
+              </label>
+            );
+          })}
         </div>
 
-        <div className="text-center pt-4">
-          <div>
-            <span style={{
-              fontSize: "14px", fontWeight: "500", textAlign: "center", fontFamily: "'Montserrat', sans-serif", color: "#6b7280", fontStyle: "italic", backgroundColor: "#f3f4f6", padding: "8px 12px", borderRadius: "6px", display: "block", marginTop: "16px", width: "fit-content", margin: "16px auto 0 auto"
-            }}>
-              Выбрано: {selected.length}/5
-            </span>
-          </div>
-          
+        <div>
+          <span style={counterStyle}>
+            Выбрано: {selected.length}/5
+          </span>
+
           <div style={{
             marginTop: "20px", display: "flex", justifyContent: "center", alignItems: "center"
           }}>
             {blockIndex > 0 && (
-              <button
-                onClick={goBack}
-                style={{ padding: "12px 24px", background: "transparent", color: "#6b7280", borderRadius: "8px", cursor: "pointer", border: "1px solid #d1d5db", fontSize: "16px", fontWeight: "400", fontFamily: "'Montserrat', sans-serif", transition: "all 0.2s ease", display: "inline-block", marginRight: "12px" }}
-              >
+              <button onClick={goBack} style={backButtonStyle}>
                 ← Назад
               </button>
             )}
-            
+
             <button
               disabled={selected.length !== 5}
               onClick={() => setShowRank(true)}
-              style={{ padding: "12px 24px", background: selected.length === 5 ? "#2563eb" : "#9ca3af", color: "white", borderRadius: "8px", cursor: selected.length === 5 ? "pointer" : "not-allowed", border: "none", fontSize: "16px", fontWeight: "500", fontFamily: "'Montserrat', sans-serif", transition: "all 0.2s ease", display: "inline-block", marginRight: blockIndex > 0 ? "12px" : "0" }}
+              style={nextButtonStyle}
             >
               {blockIndex === blocks.length - 1 ? "Готово" : "Дальше"}
             </button>

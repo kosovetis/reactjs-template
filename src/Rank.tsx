@@ -1,9 +1,8 @@
 // src/Rank.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, CSSProperties } from "react";
 import {
   DndContext,
   closestCenter,
-  PointerSensor,
   useSensor,
   useSensors,
   MouseSensor,
@@ -15,6 +14,7 @@ import {
   verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
+import { colors, font, gradients, ctaButton } from "./styles/tokens";
 
 type Item = { id: string; text: string };
 
@@ -22,24 +22,24 @@ function Row({ item, index }: { item: Item; index: number }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: item.id });
 
-  const rowStyle = {
-    WebkitUserSelect: "none" as const,
-    WebkitTouchCallout: "none" as const,
-    touchAction: "manipulation" as const,
+  const rowStyle: CSSProperties = {
+    WebkitUserSelect: "none",
+    WebkitTouchCallout: "none",
+    touchAction: "manipulation",
     transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
     transition,
-    padding: "16px",
-    border: "2px solid #e5e7eb",
-    marginBottom: "8px",
-    background: "#ffffff",
+    padding: "14px 14px 14px 50px",
+    border: `1.5px solid ${colors.line}`,
+    marginBottom: "10px",
+    background: colors.bg,
     cursor: "grab",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    fontFamily: "'Montserrat', sans-serif",
+    borderRadius: "12px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+    fontFamily: font.text,
     fontSize: "16px",
     lineHeight: "1.5",
-    position: "relative" as const,
-    color: '#1f2937', // Явно задаем темный цвет текста
+    position: "relative",
+    color: colors.ink,
   };
 
   return (
@@ -52,27 +52,25 @@ function Row({ item, index }: { item: Item; index: number }) {
       <div
         style={{
           position: "absolute",
-          left: "8px",
+          left: "12px",
           top: "50%",
           transform: "translateY(-50%)",
-          background: "#3b82f6",
-          color: "white",
+          background: gradients.base,
+          color: colors.white,
           borderRadius: "50%",
-          width: "24px",
-          height: "24px",
+          width: "26px",
+          height: "26px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "12px",
-          fontWeight: "600",
-          fontFamily: "'Montserrat', sans-serif"
+          fontSize: "13px",
+          fontWeight: font.semibold,
+          fontFamily: font.text,
         }}
       >
         {index + 1}
       </div>
-      <div style={{ marginLeft: "40px", fontFamily: "'Montserrat', sans-serif" }}>
-        {item.text}
-      </div>
+      <div>{item.text}</div>
     </div>
   );
 }
@@ -123,27 +121,30 @@ export default function Rank({
   const instruction = titleParts[1] ? titleParts[1].replace(/[()]/g, '').replace(/нажмите на него/g, 'зажмите его') : '';
 
   return (
-    <div style={{ backgroundColor: 'white', minHeight: "100vh", overflowY: "auto" }}> {/* Задаем белый фон */}
+    <div style={{ backgroundColor: colors.bg, minHeight: "100vh", overflowY: "auto", fontFamily: font.text }}>
       <div style={{
-        position: "fixed", top: 0, left: 0, right: 0, height: "4px", backgroundColor: "#e5e7eb", zIndex: 1000
+        position: "fixed", top: 0, left: 0, right: 0, height: "4px", backgroundColor: colors.track, zIndex: 1000
       }}>
         <div style={{
-          height: "100%", backgroundColor: "#3b82f6", width: `${progress}%`, transition: "width 0.3s ease"
+          height: "100%", background: gradients.base, width: `${progress}%`, transition: "width 0.3s ease"
         }}></div>
       </div>
 
       <div style={{
-        padding: "24px", maxWidth: "700px", margin: "0 auto", fontFamily: "'Montserrat', sans-serif", paddingBottom: "48px", paddingTop: "20px",
+        padding: "24px", maxWidth: "700px", margin: "0 auto", paddingBottom: "48px", paddingTop: "20px",
       }}>
         <h1 style={{
-          fontSize: "20px", marginBottom: "12px", fontWeight: "600", textAlign: "left", lineHeight: "1.4", fontFamily: "'Montserrat', sans-serif", color: "#1f2937"
+          fontFamily: font.display, fontSize: "18px", marginBottom: "12px", fontWeight: font.semibold,
+          textAlign: "left", lineHeight: "1.4", color: colors.ink, letterSpacing: "-0.3px",
         }}>
           {mainTitle}
         </h1>
-        
+
         {instruction && (
           <div style={{
-            fontSize: "14px", fontWeight: "400", textAlign: "center", marginBottom: "24px", fontFamily: "'Montserrat', sans-serif", color: "#6b7280", fontStyle: "italic", backgroundColor: "#f9fafb", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb"
+            fontSize: "14px", fontWeight: font.regular, textAlign: "center", marginBottom: "20px",
+            color: colors.inkSoft, backgroundColor: colors.panel, padding: "8px 12px",
+            borderRadius: "10px", border: `1px solid ${colors.panel2}`,
           }}>
             {instruction}
           </div>
@@ -157,16 +158,21 @@ export default function Rank({
           </DndContext>
         </div>
 
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: "center", marginTop: "24px" }}>
           <button
             onClick={onBack}
-            style={{ padding: "12px 32px", background: "transparent", color: "#6b7280", borderRadius: "8px", cursor: "pointer", border: "1px solid #d1d5db", fontSize: "16px", fontWeight: "400", fontFamily: "'Montserrat', sans-serif", transition: "all 0.2s ease", display: "inline-block", marginRight: "12px" }}
+            style={{
+              padding: "12px 28px", background: "transparent", color: colors.inkSoft,
+              borderRadius: "999px", cursor: "pointer", border: `1px solid ${colors.lineStrong}`,
+              fontSize: "16px", fontWeight: font.regular, fontFamily: font.text,
+              transition: "all 0.2s ease", display: "inline-block", marginRight: "12px",
+            }}
           >
             ← Назад
           </button>
 
           <button
-            style={{ marginTop: "24px", padding: "12px 32px", background: "#3b82f6", color: "white", border: "none", borderRadius: "8px", fontSize: "16px", fontWeight: "500", cursor: "pointer", fontFamily: "'Montserrat', sans-serif", transition: "background-color 0.2s ease", display: "inline-block", marginRight: "12px" }}
+            style={{ ...ctaButton, padding: "13px 32px" }}
             onClick={() => onDone(items.map(i => i.id))}
           >
             Готово

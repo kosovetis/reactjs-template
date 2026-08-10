@@ -2,6 +2,7 @@ import type { ComponentType, JSX } from 'react';
 
 import WelcomePage from '../pages/WelcomePage'; // ← Изменили путь
 import Home from '../Home'; // ← Изменили путь
+import PreviewResults from '../pages/PreviewResults';
 import { InitDataPage } from '../pages/InitDataPage';
 import { LaunchParamsPage } from '../pages/LaunchParamsPage';
 import { ThemeParamsPage } from '../pages/ThemeParamsPage';
@@ -16,7 +17,8 @@ interface Route {
 
 export const routes: Route[] = [
   { path: '/', Component: WelcomePage },
-  { path: '/test', Component: Home }, 
+  { path: '/test', Component: Home },
+  { path: '/preview', Component: PreviewResults },
   
   { path: '/init-data', Component: InitDataPage, title: 'Init Data' },
   { path: '/theme-params', Component: ThemeParamsPage, title: 'Theme Params' },
