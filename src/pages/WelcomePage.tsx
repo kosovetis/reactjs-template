@@ -16,7 +16,7 @@ export default function WelcomePage() {
   const heroStyle: CSSProperties = {
     position: 'relative',
     background: gradients.hero,
-    padding: '36px 24px 60px',
+    padding: '32px 24px 24px',
     overflow: 'hidden',
   };
 
@@ -26,7 +26,7 @@ export default function WelcomePage() {
     left: 0,
     right: 0,
     bottom: 0,
-    height: '96px',
+    height: '56px',
     background: heroFade,
     pointerEvents: 'none',
     zIndex: 0,
@@ -69,12 +69,13 @@ export default function WelcomePage() {
     letterSpacing: '-0.5px',
     color: colors.ink,
     textAlign: 'left',
+    margin: 0,
   };
 
   const bodyStyle: CSSProperties = {
     maxWidth: '700px',
     margin: '0 auto',
-    padding: '4px 24px 32px',
+    padding: '10px 24px 32px',
     fontFamily: font.text,
     color: colors.ink,
   };
